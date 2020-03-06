@@ -71,7 +71,6 @@ class SortingNetwork:
         """
         self.n = n
         self.switches = sorting_network_data.get(n)
-        self.switches_inverse = sorting_network_data.get(n).reverse()
         if self.switches:
             self.depth = len(self.switches)
         else:

@@ -1,5 +1,5 @@
 import numpy as np
-from qap.data_loading import parse_dat_file
+from utilities.data_loading import parse_dat_file, parse_sln_file
 
 
 class ObjectiveFunction:
@@ -65,7 +65,8 @@ class QAPObjectiveFunction(ObjectiveFunction):
     def __init__(self,
                  dat_file=None,
                  dist=None,
-                 flow=None):
+                 flow=None,
+                 sln_file=None):
         super().__init__()
         if dat_file:
             self.n, self.dist, self.flow = parse_dat_file(dat_file=dat_file)
@@ -77,8 +78,44 @@ class QAPObjectiveFunction(ObjectiveFunction):
         else:
             raise AttributeError('Distance/flow matrices missing.')
 
+        self.min_x = None
+        if sln_file:
+            _, self.min_v, self.min_x = parse_sln_file(sln_file=sln_file)
+
     def __call__(self, perm):
         ident = np.identity(self.n)
         permuted_flow = np.matmul(self.flow, ident[:, perm])
         permuted_dist = np.matmul(self.dist, np.transpose(ident[:, perm]))
         return np.trace(np.matmul(permuted_flow, permuted_dist))
+
+
+class TSPObjectiveFunction(ObjectiveFunction):
+    """
+    This Class will use the distance matrices from the QAP dat files and return the TSP objective function value for a
+    given permutation.
+    """
+    def __init__(self,
+                 dat_file=None,
+                 dist=None,
+                 flow=None,
+                 sln_file=None):
+        super().__init__()
+        if dat_file:
+            self.n, self.dist, self.flow = parse_dat_file(dat_file=dat_file)
+            self.dat_file = dat_file
+        elif dist and flow:
+            self.n = dist.shape[0]
+            self.dist = dist
+            self.flow = flow
+        else:
+            raise AttributeError('Distance/flow matrices missing.')
+
+        self.min_x = None
+        if sln_file:
+            _, self.min_v, self.min_x = parse_sln_file(sln_file=sln_file)
+
+    def __call__(self, perm):
+        ident = np.identity(self.n)
+        perm_matrix = ident[:, perm]
+        return sum(self.dist[i][j]*perm_matrix[i][k]*perm_matrix[j][np.mod(k+1, self.n)] for k in range(self.n) for i
+                   in range(self.n) for j in range(self.n))

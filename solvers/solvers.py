@@ -1,7 +1,18 @@
 import numpy as np
 from switch_networks.switch_networks import SortingNetwork, PermutationNetwork
+from form_LQUBO.form_LQUBO import LQUBO
+from form_LQUBO.form_LQUBO_penalty import LQUBOWithPenalty
+from form_LQUBO.form_LQUBO_rand_slice import RandSliceLQUBO
+from form_LQUBO.form_LQUBO_hd_slice import HDSliceLQUBO
+from form_LQUBO.from_LQUBO_hd_slice_penalty import HDSliceLQUBOPenalty
+from form_LQUBO.form_LQUBO_rand_slice_penalty import RandSliceLQUBOPenalty
 from dimod import SimulatedAnnealingSampler
+from tabu import TabuSampler
+from dwave.system.samplers import DWaveSampler
+from dwave.system.composites import EmbeddingComposite
 import itertools
+from response_selection.selection import CheckAndSelect, Select
+import time
 
 
 class Solver:
@@ -78,6 +89,10 @@ class LocalQUBOIterativeSolver(Solver):
                  objective_function=None,
                  dwave_sampler=None,
                  dwave_sampler_kwargs=None,
+                 lqubo_type=None,
+                 max_hd=None,
+                 selection_type='check and select',
+                 experiment_type=None,
                  network_type='minimum'):
         super().__init__(objective_function=objective_function)
 
@@ -104,123 +119,168 @@ class LocalQUBOIterativeSolver(Solver):
         self.qpu = False
 
         # Initialize dwave sampler:
-        if dwave_sampler:
-            self.dwave_solver = dwave_sampler
+        if dwave_sampler == 'QPU':
+            self.dwave_solver = EmbeddingComposite(DWaveSampler())
             self.qpu = True
             if dwave_sampler_kwargs:
                 self.sampler_kwargs = dwave_sampler_kwargs
             else:
                 self.sampler_kwargs = dict()
-        else:
+        elif dwave_sampler == 'SA':
             self.dwave_solver = SimulatedAnnealingSampler()
             self.sampler_kwargs = {
-                'num_reads': 10
+                'num_reads': 25
+            }
+        elif dwave_sampler == 'Tabu':
+            self.dwave_solver = TabuSampler()
+            self.sampler_kwargs = {
+                'num_reads': 50
             }
 
-        # Initialize iteration parameters:
-        self.n_iters = 10
+        self.stopwatch = 0
+
+        # Initialize type of experiment
+        # When running a timed experiment there is a high number of iterations and a 30 sec wall clock
+        # When running a iteration experiment there is a iteration limit of 30 and no wall clock
+        if experiment_type == 'time limit':
+            self.n_iters = 1000
+            self.time_limit = 30
+        elif experiment_type == 'iteration limit':
+            self.n_iters = 10
+            self.time_limit = False
+
+        if max_hd:
+            self.max_hd = max_hd
+
+        # Can toggle the type of qubo based on whether penalty is T or F
+        if lqubo_type == 'LQUBO':
+            self.form_qubo = LQUBO(objective_function=self.objective_function,
+                                   switch_network=self.network,
+                                   n_qubo=self.n_qubo)
+        elif lqubo_type == 'LQUBO WP':
+            self.form_qubo = LQUBOWithPenalty(objective_function=self.objective_function,
+                                              switch_network=self.network,
+                                              n_qubo=self.n_qubo,
+                                              max_hd=8)
+        elif lqubo_type == 'Rand Slice LQUBO':
+            self.form_qubo = RandSliceLQUBO(objective_function=self.objective_function,
+                                            switch_network=self.network,
+                                            n_qubo=self.n_qubo).form_lqubo(q=self.q)
+        elif lqubo_type == 'Rand Slice LQUBO WP':
+            self.form_qubo = RandSliceLQUBOPenalty(objective_function=self.objective_function,
+                                                   switch_network=self.network,
+                                                   n_qubo=self.n_qubo,
+                                                   max_hd=self.max_hd).form_lqubo(q=self.q)
+        elif lqubo_type == 'HD Slice LQUBO':
+            self.form_qubo = HDSliceLQUBO(objective_function=self.objective_function,
+                                          switch_network=self.network,
+                                          n_qubo=self.n_qubo,
+                                          #num_slice_vectors=num_slice_vectors,
+                                          slice_hd=2).form_lqubo(q=self.q)
+        elif lqubo_type == 'HD Slice LQUBO WP':
+            self.form_qubo = HDSliceLQUBOPenalty(objective_function=self.objective_function,
+                                                 switch_network=self.network,
+                                                 n_qubo=self.n_qubo,
+                                                 max_hd=6,
+                                                 #num_slice_vectors=num_slice_vectors,
+                                                 slice_hd=2).form_lqubo(q=self.q)
+
+        self.solution = self.objective_function.min_v
+
+        self.q = np.random.randint(0, 2, size=self.n_qubo)
+        self.p = self.network.permute(self.q)
+        self.v = self.objective_function(self.p)
+        self.delta_q = None
+
+        self.data_dict = dict()
+        self.data_dict['q_vec'] = [self.q]
+        self.data_dict['p_vec'] = [self.p]
+        self.data_dict['v_vec'] = [self.v]
+        self.data_dict['delta_q_vec'] = [['random switch setting']]
+
+        if selection_type == 'check and select':
+            self.selection = CheckAndSelect
+        elif selection_type == 'select':
+            self.selection = Select
 
     def minimize_objective(self):
-
-        ident = np.identity(self.n_qubo)
+        start_code = time.time()
 
         # Initialize bitstring
-        q = np.random.randint(0, 2, size=self.n_qubo)
-        p = self.network.permute(q)
-        v = self.objective_function(p)
 
-        data_dict = dict()
-        data_dict['q_vec'] = [q]
-        data_dict['p_vec'] = [p]
-        data_dict['v_vec'] = [v]
-        data_dict['Termination cause'] = []
-
+        begin_loop = time.time()
+        self.stopwatch = begin_loop - start_code
         for _ in range(self.n_iters):
+
+            # If there is a timing limit and the stopwatch is greater than the timing limit then break
+            if self.time_limit and self.time_limit <= self.stopwatch:
+                break
+            start_iteration = time.time()
 
             # Build the Local QUBO by creating all delta_q's that are hamming distance 2
             # from the current q.  For each of those, the new q gives a permutation (via
             # the network encoding) and hence a new objective function value.  The deltas
             # in the objective function values are what populate the qubo.
-            qubo = dict()
-            for i in range(self.n_qubo):
-                delta_q = ident[i, :]
-                q_new = np.mod(q + delta_q, 2)
-                p_new = self.network.permute(q_new)
-                v_new = self.objective_function(p_new)
-                qubo[(i, i)] = v_new - v
-                for j in range(i+1, self.n_qubo):
-                    delta_q = ident[i, :] + ident[j, :]
-                    q_new = np.mod(q + delta_q, 2)
-                    p_new = self.network.permute(q_new)
-                    v_new = self.objective_function(p_new)
-                    qubo[(i, j)] = v_new - v
+            qubo = self.form_qubo.form_lqubo(q=self.q)[0]
 
             # Solve the QUBO for delta_q
             if self.qpu:
                 self.sampler_kwargs.update({
                     'chain_strength': 1.5*abs(max(qubo.values(), key=abs)),
-                    'num_reads': 1000
+                    'num_reads': 500
                 })
-            response = self.dwave_solver.sample_qubo(qubo, **self.sampler_kwargs)
-            delta_q = response.record[0][0]
 
-            # Update the new q:
-            q = np.mod(q + delta_q, 2)
-            p = self.network.permute(q)
-            v = self.objective_function(p)
-
-            secondary_qpu_read = False
-            for delta_q in response.record:
-                # Look through all responses in num reads to see if current q has been visited
-                q = np.mod(q + delta_q[0], 2)
-                p = self.network.permute(q)
-                v = self.objective_function(p)
-                if not self.q_in_data(data=data_dict['q_vec'], q=q):
-                    # If the current q is not already in data_dict then it is a valid q and break for loop.
-                    # If the current q is in data_dict then secondary_qpu_read will remain false.
-                    secondary_qpu_read = True
+            retries = 10
+            while retries > 0:
+                try:
+                    response = self.dwave_solver.sample_qubo(qubo, **self.sampler_kwargs)
+                    select_response = self.selection(objective_function=self.objective_function,
+                                                     switch_network=self.network,
+                                                     response_record=response.record,
+                                                     data_dict_qvecs=self.data_dict['q_vec'],
+                                                     current_q=self.q).select()
+                    self.q = select_response[0]
+                    self.p = select_response[1]
+                    self.v = select_response[2]
+                    self.delta_q = select_response[3]
                     break
+                except ValueError:
+                    print('retrying QUBO...')
+                    retries -= 1
 
-            if not secondary_qpu_read:
-                # If all responses in num reads have been visited then there are no more valid qpu samples.
-                # Therefore if secondary_qpu_read remains false at end of for loop above then code is terminated
-                # and csv is produced.
+            if retries == 0:
+                self.q = np.random.randint(0, 2, size=self.n_qubo)
+                self.p = self.network.permute(self.q)
+                self.v = self.objective_function(self.p)
+                self.delta_q = None
 
-                delta_q = response.record[0][0]
-                q = np.mod(q + delta_q, 2)
-                p = self.network.permute(q)
-                v = self.objective_function(p)
-                data_dict['q_vec'].append(q)
-                data_dict['p_vec'].append(p)
-                data_dict['v_vec'].append(v)
-                data_dict['Termination cause'].append('Redundant QPU samples')
+                self.data_dict['q_vec'] = [self.q]
+                self.data_dict['p_vec'] = [self.p]
+                self.data_dict['v_vec'] = [self.v]
+                self.data_dict['delta_q_vec'] = [['random switch setting']]
 
-                return min(data_dict['v_vec']), data_dict['p_vec'][data_dict['v_vec'].index(min(data_dict['v_vec']))], \
-                    data_dict
+            self.data_dict['q_vec'].append(self.q)
+            self.data_dict['p_vec'].append(self.p)
+            self.data_dict['v_vec'].append(self.v)
+            self.data_dict['delta_q_vec'].append(self.delta_q)
 
-            data_dict['q_vec'].append(q)
-            data_dict['p_vec'].append(p)
-            data_dict['v_vec'].append(v)
+            end_iteration = time.time()
+            self.stopwatch += end_iteration - start_iteration
 
-        data_dict['Termination cause'].append('No more iterations')
+        end_code = time.time()
+        timing_code = end_code - start_code
 
-        return min(data_dict['v_vec']), data_dict['p_vec'][data_dict['v_vec'].index(min(data_dict['v_vec']))], data_dict
+        lqubo_ans = min(self.data_dict['v_vec'])
+        num_iters = len(self.data_dict['v_vec']) - 1
 
-    def q_in_data(self, data, q):
-        # data is expected to be a list
+        if lqubo_ans == self.solution:
+            obtain_optimal = 1
+            percent_error = 0
+        else:
+            percent_error = abs(self.solution - lqubo_ans) / self.solution * 100
+            obtain_optimal = 0
 
-        all_tests = []
-
-        for arr in data:
-            # arr is a numpy array
-
-            comparison = arr == q
-
-            # all elements of of numpy arrays are equal
-            all_tests.append(np.all(comparison))
-
-        # when the loop is done return if all of the arrays matched
-        return any(all_tests)
+        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, self.data_dict
 
 
 class NaturalEncodingSolver(Solver):
