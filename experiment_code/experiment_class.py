@@ -7,6 +7,7 @@ class Experiment:
     This class is designed to run multiple trials of a solver for a specified QAP/ TSP and collect data
     """
     def __init__(self,
+                 max_hd=None,
                  objective_function=None,
                  num_trials=None,
                  solver=None,
@@ -37,6 +38,7 @@ class Experiment:
                     self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
                                                            dwave_sampler=sampler_type,
                                                            lqubo_type='LQUBO',
+                                                           selection_type='select',
                                                            experiment_type=experiment_type)
             else:
                 raise AttributeError('Invalid type of experiment.')
@@ -51,6 +53,7 @@ class Experiment:
                                                            dwave_sampler=sampler_type,
                                                            lqubo_type='LQUBO WP',
                                                            selection_type='select',
+                                                           max_hd=max_hd,
                                                            experiment_type=experiment_type)
             else:
                 raise AttributeError('Invalid type of experiment.')
@@ -79,11 +82,12 @@ class Experiment:
                                                            dwave_sampler=sampler_type,
                                                            lqubo_type='LQUBO WP',
                                                            selection_type='check and select',
+                                                           max_hd=max_hd,
                                                            experiment_type=experiment_type)
             else:
                 raise AttributeError('Invalid type of experiment.')
-        elif solver == 'Sliced LQUBO':
-            self.solver_str = 'Sliced LQUBO'
+        elif solver == 'Rand Slice LQUBO':
+            self.solver_str = 'Rand Slice LQUBO'
             if experiment_type == 'time limit' or 'iteration limit':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
@@ -91,13 +95,13 @@ class Experiment:
                 else:
                     self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
                                                            dwave_sampler=sampler_type,
-                                                           lqubo_type='Sliced LQUBO',
+                                                           lqubo_type='Rand Slice LQUBO',
                                                            selection_type='select',
                                                            experiment_type=experiment_type)
             else:
                 raise AttributeError('Invalid type of experiment.')
-        elif solver == 'Sliced LQUBO WS':
-            self.solver_str = 'Sliced LQUBO WS'
+        elif solver == 'Rand Slice LQUBO WS':
+            self.solver_str = 'Rand Slice LQUBO WS'
             if experiment_type == 'time limit' or 'iteration limit':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
@@ -105,13 +109,13 @@ class Experiment:
                 else:
                     self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
                                                            dwave_sampler=sampler_type,
-                                                           lqubo_type='Sliced LQUBO',
+                                                           lqubo_type='Rand Slice LQUBO',
                                                            selection_type='check and select',
                                                            experiment_type=experiment_type)
             else:
                 raise AttributeError('Invalid type of experiment.')
-        elif solver == 'Sliced LQUBO WP':
-            self.solver_str = 'Sliced LQUBO WP'
+        elif solver == 'Rand Slice LQUBO WP':
+            self.solver_str = 'Rand Slice LQUBO WP'
             if experiment_type == 'time limit' or 'iteration limit':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
@@ -119,13 +123,43 @@ class Experiment:
                 else:
                     self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
                                                            dwave_sampler=sampler_type,
-                                                           lqubo_type='Sliced LQUBO WP',
+                                                           lqubo_type='Rand Slice LQUBO WP',
+                                                           selection_type='select',
+                                                           max_hd=max_hd,
+                                                           experiment_type=experiment_type)
+            else:
+                raise AttributeError('Invalid type of experiment.')
+        elif solver == 'Rand Slice LQUBO WP and WS':
+            self.solver_str = 'Rand Slice LQUBO WP and WS'
+            if experiment_type == 'time limit' or 'iteration limit':
+                self.experiment_str = experiment_type
+                if sampler_type not in ['SA', 'QPU', 'Tabu']:
+                    raise AttributeError('Invalid type of sampler.')
+                else:
+                    self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
+                                                           dwave_sampler=sampler_type,
+                                                           lqubo_type='Rand Slice LQUBO WP',
+                                                           selection_type='check and select',
+                                                           max_hd=max_hd,
+                                                           experiment_type=experiment_type)
+            else:
+                raise AttributeError('Invalid type of experiment.')
+        elif solver == 'HD Slice LQUBO':
+            self.solver_str = 'HD Slice LQUBO'
+            if experiment_type == 'time limit' or 'iteration limit':
+                self.experiment_str = experiment_type
+                if sampler_type not in ['SA', 'QPU', 'Tabu']:
+                    raise AttributeError('Invalid type of sampler.')
+                else:
+                    self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
+                                                           dwave_sampler=sampler_type,
+                                                           lqubo_type='HD Slice LQUBO',
                                                            selection_type='select',
                                                            experiment_type=experiment_type)
             else:
                 raise AttributeError('Invalid type of experiment.')
-        elif solver == 'Sliced LQUBO WP and WS':
-            self.solver_str = 'Sliced LQUBO WP and WS'
+        elif solver == 'HD Slice LQUBO WS':
+            self.solver_str = 'HD Slice LQUBO WS'
             if experiment_type == 'time limit' or 'iteration limit':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
@@ -133,8 +167,38 @@ class Experiment:
                 else:
                     self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
                                                            dwave_sampler=sampler_type,
-                                                           lqubo_type='Sliced LQUBO WP',
+                                                           lqubo_type='HD Slice LQUBO',
                                                            selection_type='check and select',
+                                                           experiment_type=experiment_type)
+            else:
+                raise AttributeError('Invalid type of experiment.')
+        elif solver == 'HD Slice LQUBO WP':
+            self.solver_str = 'HD Slice LQUBO WP'
+            if experiment_type == 'time limit' or 'iteration limit':
+                self.experiment_str = experiment_type
+                if sampler_type not in ['SA', 'QPU', 'Tabu']:
+                    raise AttributeError('Invalid type of sampler.')
+                else:
+                    self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
+                                                           dwave_sampler=sampler_type,
+                                                           lqubo_type='HD Slice LQUBO WP',
+                                                           selection_type='select',
+                                                           max_hd=max_hd,
+                                                           experiment_type=experiment_type)
+            else:
+                raise AttributeError('Invalid type of experiment.')
+        elif solver == 'HD Slice LQUBO WP and WS':
+            self.solver_str = 'HD Slice LQUBO WP and WS'
+            if experiment_type == 'time limit' or 'iteration limit':
+                self.experiment_str = experiment_type
+                if sampler_type not in ['SA', 'QPU', 'Tabu']:
+                    raise AttributeError('Invalid type of sampler.')
+                else:
+                    self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
+                                                           dwave_sampler=sampler_type,
+                                                           lqubo_type='HD Slice LQUBO WP',
+                                                           selection_type='check and select',
+                                                           max_hd=max_hd,
                                                            experiment_type=experiment_type)
             else:
                 raise AttributeError('Invalid type of experiment.')
@@ -157,7 +221,8 @@ class Experiment:
                                                    self.experiment_str,
                                                    trial + 1,
                                                    'starting_trial'))
-            solver_ans = self.solver.minimize_objective()
+            solver = self.solver
+            solver_ans = solver.minimize_objective()
 
             results['approx_ans'].append(solver_ans[0])
             results['percent_error'].append(solver_ans[1])

@@ -12,6 +12,7 @@ class CheckAndSelect:
                  objective_function=None,
                  switch_network=None,
                  response_record=None,
+                 delta_q_basis=None,
                  data_dict_qvecs=None,
                  current_q=None):
 
@@ -20,6 +21,7 @@ class CheckAndSelect:
         self.n_qubo = self.network.depth
         self.response_rec = response_record
         self.data_dict_qvecs = data_dict_qvecs
+        self.delta_q_basis = delta_q_basis
         self.current_q = current_q
         self.all_q_in_data = True
         self.selected_q = 0
@@ -58,7 +60,7 @@ class CheckAndSelect:
         """
         ordered_response = []
         for response in response_list:
-            q_new = np.mod(self.current_q + response[0], 2)
+            q_new = np.mod(self.current_q + np.matmul(response[0], self.delta_q_basis), 2)
             p_new = self.network.permute(q_new)
             v_new = self.objective_function(p_new)
             ordered_response.append([v_new, q_new, p_new, response[0]])
@@ -154,12 +156,14 @@ class Select:
                  switch_network=None,
                  response_record=None,
                  data_dict_qvecs=None,
+                 delta_q_basis=None,
                  current_q=None):
         self.objective_function = objective_function
         self.network = switch_network
         self.n_qubo = self.network.depth
         self.response_rec = response_record
         self.data_dict_qvecs = data_dict_qvecs
+        self.delta_q_basis = delta_q_basis
         self.current_q = current_q
         self.all_q_in_data = True
         self.selected_q = 0
@@ -194,10 +198,11 @@ class Select:
         and will feed into decision for check and select fcn.
         """
         for response in response_var:
-            if not self.q_in_data(q=response[1], data=self.data_dict_qvecs):
-                self.selected_q = np.mod(self.current_q + response[0], 2)
+            self.selected_q = np.mod(self.current_q + np.matmul(response[0], self.delta_q_basis), 2)
+            if not self.q_in_data(q=self.selected_q, data=self.data_dict_qvecs):
                 self.selected_p = self.network.permute(self.selected_q)
                 self.selected_v = self.objective_function(self.selected_p)
+                self.selected_response = response[0]
                 self.all_q_in_data = False
                 break
 

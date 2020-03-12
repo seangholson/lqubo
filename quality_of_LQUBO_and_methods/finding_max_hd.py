@@ -132,7 +132,7 @@ class MaxHDSolver:
                     p = network.permute(q)
                     v = objective_function(p)
 
-                    for iteration in range(20):
+                    for iteration in range(100):
                         r_val = []
                         hamming_weight = []
                         for hamming_dist in range(n_qubo):
@@ -161,11 +161,11 @@ class MaxHDSolver:
                             r_val.append(r_value ** 2)
                             hamming_weight.append(hamming_dist)
 
-                            if r_value**2 < 0.1:
+                            if r_value**2 < 0.05:
                                 max_hd_list.append(hamming_weight[r_val.index(r_value**2)])
                                 break
 
                     avg_max_hd = stat.mean(max_hd_list)
-                    self.max_hd_dict[instance][problem]['max hd vals'].append(round(avg_max_hd))
+                    self.max_hd_dict[instance][problem]['max hd vals'].append(avg_max_hd)
 
         return self.max_hd_dict['had']['qap']['max hd vals'], self.max_hd_dict['had']['tsp']['max hd vals'], self.max_hd_dict['nug']['qap']['max hd vals'], self.max_hd_dict['nug']['tsp']['max hd vals'],

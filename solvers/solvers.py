@@ -134,7 +134,7 @@ class LocalQUBOIterativeSolver(Solver):
         elif dwave_sampler == 'Tabu':
             self.dwave_solver = TabuSampler()
             self.sampler_kwargs = {
-                'num_reads': 50
+                'num_reads': 10
             }
 
         self.stopwatch = 0
@@ -146,13 +146,12 @@ class LocalQUBOIterativeSolver(Solver):
             self.n_iters = 1000
             self.time_limit = 30
         elif experiment_type == 'iteration limit':
-            self.n_iters = 10
+            self.n_iters = 30
             self.time_limit = False
 
         if max_hd:
             self.max_hd = max_hd
 
-        # Can toggle the type of qubo based on whether penalty is T or F
         if lqubo_type == 'LQUBO':
             self.form_qubo = LQUBO(objective_function=self.objective_function,
                                    switch_network=self.network,
@@ -161,42 +160,31 @@ class LocalQUBOIterativeSolver(Solver):
             self.form_qubo = LQUBOWithPenalty(objective_function=self.objective_function,
                                               switch_network=self.network,
                                               n_qubo=self.n_qubo,
-                                              max_hd=8)
+                                              max_hd=self.max_hd)
         elif lqubo_type == 'Rand Slice LQUBO':
             self.form_qubo = RandSliceLQUBO(objective_function=self.objective_function,
                                             switch_network=self.network,
-                                            n_qubo=self.n_qubo).form_lqubo(q=self.q)
+                                            n_qubo=self.n_qubo)
         elif lqubo_type == 'Rand Slice LQUBO WP':
             self.form_qubo = RandSliceLQUBOPenalty(objective_function=self.objective_function,
                                                    switch_network=self.network,
                                                    n_qubo=self.n_qubo,
-                                                   max_hd=self.max_hd).form_lqubo(q=self.q)
+                                                   max_hd=self.max_hd)
         elif lqubo_type == 'HD Slice LQUBO':
             self.form_qubo = HDSliceLQUBO(objective_function=self.objective_function,
                                           switch_network=self.network,
                                           n_qubo=self.n_qubo,
                                           #num_slice_vectors=num_slice_vectors,
-                                          slice_hd=2).form_lqubo(q=self.q)
+                                          slice_hd=2)
         elif lqubo_type == 'HD Slice LQUBO WP':
             self.form_qubo = HDSliceLQUBOPenalty(objective_function=self.objective_function,
                                                  switch_network=self.network,
                                                  n_qubo=self.n_qubo,
-                                                 max_hd=6,
+                                                 max_hd=self.max_hd,
                                                  #num_slice_vectors=num_slice_vectors,
-                                                 slice_hd=2).form_lqubo(q=self.q)
+                                                 slice_hd=2)
 
         self.solution = self.objective_function.min_v
-
-        self.q = np.random.randint(0, 2, size=self.n_qubo)
-        self.p = self.network.permute(self.q)
-        self.v = self.objective_function(self.p)
-        self.delta_q = None
-
-        self.data_dict = dict()
-        self.data_dict['q_vec'] = [self.q]
-        self.data_dict['p_vec'] = [self.p]
-        self.data_dict['v_vec'] = [self.v]
-        self.data_dict['delta_q_vec'] = [['random switch setting']]
 
         if selection_type == 'check and select':
             self.selection = CheckAndSelect
@@ -206,11 +194,22 @@ class LocalQUBOIterativeSolver(Solver):
     def minimize_objective(self):
         start_code = time.time()
 
+        q = np.random.randint(0, 2, size=self.n_qubo)
+        p = self.network.permute(q)
+        v = self.objective_function(p)
+        delta_q = None
+
+        data_dict = dict()
+        data_dict['q_vec'] = [q]
+        data_dict['p_vec'] = [p]
+        data_dict['v_vec'] = [v]
+        data_dict['delta_q_vec'] = [['random switch setting']]
+
         # Initialize bitstring
 
         begin_loop = time.time()
         self.stopwatch = begin_loop - start_code
-        for _ in range(self.n_iters):
+        for iteration in range(self.n_iters):
 
             # If there is a timing limit and the stopwatch is greater than the timing limit then break
             if self.time_limit and self.time_limit <= self.stopwatch:
@@ -221,7 +220,8 @@ class LocalQUBOIterativeSolver(Solver):
             # from the current q.  For each of those, the new q gives a permutation (via
             # the network encoding) and hence a new objective function value.  The deltas
             # in the objective function values are what populate the qubo.
-            qubo = self.form_qubo.form_lqubo(q=self.q)[0]
+            qubo = self.form_qubo.form_lqubo(q=q)[0]
+            delta_q_basis = self.form_qubo.form_lqubo(q=q)[1]
 
             # Solve the QUBO for delta_q
             if self.qpu:
@@ -237,32 +237,33 @@ class LocalQUBOIterativeSolver(Solver):
                     select_response = self.selection(objective_function=self.objective_function,
                                                      switch_network=self.network,
                                                      response_record=response.record,
-                                                     data_dict_qvecs=self.data_dict['q_vec'],
-                                                     current_q=self.q).select()
-                    self.q = select_response[0]
-                    self.p = select_response[1]
-                    self.v = select_response[2]
-                    self.delta_q = select_response[3]
+                                                     delta_q_basis=delta_q_basis,
+                                                     data_dict_qvecs=data_dict['q_vec'],
+                                                     current_q=q).select()
+                    q = select_response[0]
+                    p = select_response[1]
+                    v = select_response[2]
+                    delta_q = select_response[3]
                     break
                 except ValueError:
                     print('retrying QUBO...')
                     retries -= 1
 
             if retries == 0:
-                self.q = np.random.randint(0, 2, size=self.n_qubo)
-                self.p = self.network.permute(self.q)
-                self.v = self.objective_function(self.p)
-                self.delta_q = None
+                q = np.random.randint(0, 2, size=self.n_qubo)
+                p = self.network.permute(q)
+                v = self.objective_function(p)
+                delta_q = None
 
-                self.data_dict['q_vec'] = [self.q]
-                self.data_dict['p_vec'] = [self.p]
-                self.data_dict['v_vec'] = [self.v]
-                self.data_dict['delta_q_vec'] = [['random switch setting']]
+                data_dict['q_vec'] = [q]
+                data_dict['p_vec'] = [p]
+                data_dict['v_vec'] = [v]
+                data_dict['delta_q_vec'] = [['random switch setting']]
 
-            self.data_dict['q_vec'].append(self.q)
-            self.data_dict['p_vec'].append(self.p)
-            self.data_dict['v_vec'].append(self.v)
-            self.data_dict['delta_q_vec'].append(self.delta_q)
+            data_dict['q_vec'].append(q)
+            data_dict['p_vec'].append(p)
+            data_dict['v_vec'].append(v)
+            data_dict['delta_q_vec'].append(delta_q)
 
             end_iteration = time.time()
             self.stopwatch += end_iteration - start_iteration
@@ -270,8 +271,8 @@ class LocalQUBOIterativeSolver(Solver):
         end_code = time.time()
         timing_code = end_code - start_code
 
-        lqubo_ans = min(self.data_dict['v_vec'])
-        num_iters = len(self.data_dict['v_vec']) - 1
+        lqubo_ans = min(data_dict['v_vec'])
+        num_iters = len(data_dict['v_vec']) - 1
 
         if lqubo_ans == self.solution:
             obtain_optimal = 1
@@ -280,7 +281,7 @@ class LocalQUBOIterativeSolver(Solver):
             percent_error = abs(self.solution - lqubo_ans) / self.solution * 100
             obtain_optimal = 0
 
-        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, self.data_dict
+        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, data_dict
 
 
 class NaturalEncodingSolver(Solver):

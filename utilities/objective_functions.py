@@ -117,5 +117,10 @@ class TSPObjectiveFunction(ObjectiveFunction):
     def __call__(self, perm):
         ident = np.identity(self.n)
         perm_matrix = ident[:, perm]
-        return sum(self.dist[i][j]*perm_matrix[i][k]*perm_matrix[j][np.mod(k+1, self.n)] for k in range(self.n) for i
-                   in range(self.n) for j in range(self.n))
+        cycle_perm = list(range(self.n))
+        cycle_perm.remove(0)
+        cycle_perm.append(0)
+        cycle_perm_matrix = ident[:, cycle_perm]
+        left_action = np.matmul(perm_matrix, cycle_perm_matrix)
+        right_action = np.matmul(self.dist, perm_matrix)
+        return np.trace(np.matmul(left_action, right_action))

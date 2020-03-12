@@ -41,7 +41,7 @@ class LQUBOWithPenalty:
         max_val = max(inverse)[0]
 
         # penalty value
-        p = (1.5*(max_val + abs(min_val)))/(1 - (self.max_hd/2))**2
+        p = (1.8*(max_val + abs(min_val)))/(1 - (self.max_hd/2))**2
         a = (self.max_hd + 2)/2
 
         # Adding penalty into main qubo

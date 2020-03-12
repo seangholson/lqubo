@@ -57,10 +57,10 @@ class HDSliceLQUBOPenalty:
         v = self.objective_function(p)
         qubo = dict()
 
-        random_slice = self.form_hd_slice()
+        hd_slice = self.form_hd_slice()
 
         for i in range(self.num_slice_vectors):
-            delta_q = random_slice[i]
+            delta_q = hd_slice[i]
             q_new = np.mod(q + delta_q, 2)
             p_new = self.network.permute(q_new)
             v_new = self.objective_function(p_new)
@@ -68,7 +68,7 @@ class HDSliceLQUBOPenalty:
 
         for i in range(self.num_slice_vectors):
             for j in range(i + 1, self.num_slice_vectors):
-                delta_q = np.mod(random_slice[i] + random_slice[j], 2)
+                delta_q = np.mod(hd_slice[i] + hd_slice[j], 2)
                 q_new = np.mod(q + delta_q, 2)
                 p_new = self.network.permute(q_new)
                 v_new = self.objective_function(p_new)
@@ -79,7 +79,7 @@ class HDSliceLQUBOPenalty:
         max_val = max(inverse)[0]
 
         # penalty value
-        p = (1.5*(max_val + min_val))/(1 - (self.max_hd/2))**2
+        p = (1.8*(max_val + min_val))/(1 - (self.max_hd/2))**2
         a = (self.max_hd + 2)/2
 
         # Adding penalty into main qubo
@@ -88,4 +88,4 @@ class HDSliceLQUBOPenalty:
             for j in range(i + 1, self.n_qubo):
                 qubo[(i, j)] = qubo[(i, j)] + 2*p
 
-        return qubo, random_slice, p*((self.max_hd + 2)/2)**2
+        return qubo, hd_slice, p*((self.max_hd + 2)/2)**2
