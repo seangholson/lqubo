@@ -9,27 +9,6 @@ class RunExperimentsAndPlotStatsTSP:
     def __init__(self, num_trials=None):
 
         self.num_trials = num_trials
-        experiment_type_and_of_ga_had = {'time limit': {'percent error': [[], []],
-                                                        'failure to obtain optimal': [[], []],
-                                                        'timing code': [[], []],
-                                                        'number of iterations': [[], []]},
-                                         'iteration limit': {'percent error': [[], []],
-                                                             'failure to obtain optimal': [[], []],
-                                                             'timing code': [[], []],
-                                                             'number of iterations': [[], []]},
-                                         'objective function': [],
-                                         'domain': ['4', '6', '8', '10', '12', '14', '16', '18', '20']}
-
-        experiment_type_and_of_ga_nug = {'time limit': {'percent error': [[], []],
-                                                        'failure to obtain optimal': [[], []],
-                                                        'timing code': [[], []],
-                                                        'number of iterations': [[], []]},
-                                         'iteration limit': {'percent error': [[], []],
-                                                             'failure to obtain optimal': [[], []],
-                                                             'timing code': [[], []],
-                                                             'number of iterations': [[], []]},
-                                         'objective function': [],
-                                         'domain': ['12', '14', '15', '16a', '16b', '17', '18', '20']}
 
         experiment_type_and_of_lqubo_had = {'time limit': {'percent error': [[], []],
                                                            'failure to obtain optimal': [[], []],
@@ -75,10 +54,33 @@ class RunExperimentsAndPlotStatsTSP:
                                                'objective function': [],
                                                'domain': ['12', '14', '15', '16a', '16b']}
 
-        TSP_instance_ga = {'had': experiment_type_and_of_ga_had, 'nug': experiment_type_and_of_ga_nug}
+        experiment_type_and_of_lqubo_ws_had = {'time limit': {'percent error': [[], []],
+                                                              'failure to obtain optimal': [[], []],
+                                                              'timing code': [[], []],
+                                                              'number of iterations': [[], []]},
+                                               'iteration limit': {'percent error': [[], []],
+                                                                   'failure to obtain optimal': [[], []],
+                                                                   'timing code': [[], []],
+                                                                   'number of iterations': [[], []]},
+                                               'objective function': [],
+                                               'domain': ['4', '6', '8', '10', '12', '14', '16']}
+
+        experiment_type_and_of_lqubo_ws_nug = {'time limit': {'percent error': [[], []],
+                                                              'failure to obtain optimal': [[], []],
+                                                              'timing code': [[], []],
+                                                              'number of iterations': [[], []]},
+                                               'iteration limit': {'percent error': [[], []],
+                                                                   'failure to obtain optimal': [[], []],
+                                                                   'timing code': [[], []],
+                                                                   'number of iterations': [[], []]},
+                                               'objective function': [],
+                                               'domain': ['12', '14', '15', '16a', '16b']}
+
         TSP_instance_lqubo = {'had': experiment_type_and_of_lqubo_had, 'nug': experiment_type_and_of_lqubo_nug}
         TSP_instance_lqubo_wp = {'had': experiment_type_and_of_lqubo_wp_had, 'nug': experiment_type_and_of_lqubo_wp_nug}
-        self.results_data = {'GA': TSP_instance_ga, 'LQUBO': TSP_instance_lqubo, 'LQUBO WP and WS': TSP_instance_lqubo_wp}
+        TSP_instance_lqubo_ws = {'had': experiment_type_and_of_lqubo_ws_had, 'nug': experiment_type_and_of_lqubo_ws_nug}
+        self.results_data = {'LQUBO WS': TSP_instance_lqubo_ws, 'LQUBO': TSP_instance_lqubo,
+                             'LQUBO WP and WS': TSP_instance_lqubo_wp}
 
         self.solvers = ['LQUBO', 'LQUBO WP and WS']
         self.TSP_instance = ['had', 'nug']

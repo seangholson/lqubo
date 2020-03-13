@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 had_domain = ['4', '6', '8', '10', '12', '14', '16']
 
 had_of = []
-num_trials = 2
+num_trials = 10
 
 max_hd_list = []
 
@@ -14,9 +14,9 @@ max_hd_list = []
 def select_max_hd(solver_str, index):
     global max_hd_list
     if solver_str == 'LQUBO WP':
-        max_hd_list = [3, 4, 8, 4, 5, 9, 12]
+        max_hd_list = [5, 6, 8, 9, 10, 11, 11]
     elif solver_str == 'HD Slice LQUBO WP':
-        max_hd_list = [5, 3, 4, 4, 4, 8, 6]
+        max_hd_list = [4, 4, 5, 6, 6, 7, 7]
     elif solver_str == 'LQUBO' or 'HD Slice LQUBO':
         max_hd_list = [0, 0, 0, 0, 0, 0, 0]
     return max_hd_list[index]
