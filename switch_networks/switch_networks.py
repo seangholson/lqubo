@@ -108,12 +108,9 @@ class SortingNetwork:
         :param config: a binary list of length self.depth
         :return: the corresponding permutation of range(self.n)
         """
-        switches = self.switches
-        switches.reverse()
-        config[:] = config[::-1]
+
         p = list(range(self.n))
-        for i in range(len(config)):
+        for i, switch in enumerate(self.switches):
             if config[i]:
-                p = swap(p, switches[i])
-        config[:] = config[::-1]
+                p = swap(p, switch)
         return p
