@@ -137,7 +137,7 @@ class MaxHDSolver:
                     avg_max_hd = stat.mean(max_hd_list)
                     end_time = time.time()
                     self.max_hd_dict[instance][problem]['max hd vals'].append(avg_max_hd)
-                    self.max_hd_dict[instance][problem]['time to compute max hd'].append(start_time - end_time)
+                    self.max_hd_dict[instance][problem]['time to compute max hd'].append(end_time - start_time)
         end_code = time.time()
-        self.max_hd_dict['total time to compute max hd code'].append(start_code - end_code)
+        self.max_hd_dict['total time to compute max hd code'].append(end_code - start_code)
         return self.max_hd_dict['had']['qap']['max hd vals'], self.max_hd_dict['had']['tsp']['max hd vals'], self.max_hd_dict['nug']['qap']['max hd vals'], self.max_hd_dict['nug']['tsp']['max hd vals'],

@@ -174,14 +174,14 @@ class LocalQUBOIterativeSolver(Solver):
             self.form_qubo = HDSliceLQUBO(objective_function=self.objective_function,
                                           switch_network=self.network,
                                           n_qubo=self.n_qubo,
-                                          #num_slice_vectors=num_slice_vectors,
+                                          # num_slice_vectors=num_slice_vectors,
                                           slice_hd=2)
         elif lqubo_type == 'HD Slice LQUBO WP':
             self.form_qubo = HDSliceLQUBOPenalty(objective_function=self.objective_function,
                                                  switch_network=self.network,
                                                  n_qubo=self.n_qubo,
                                                  max_hd=self.max_hd,
-                                                 #num_slice_vectors=num_slice_vectors,
+                                                 # num_slice_vectors=num_slice_vectors,
                                                  slice_hd=2)
 
         self.solution = self.objective_function.min_v
@@ -227,7 +227,7 @@ class LocalQUBOIterativeSolver(Solver):
             if self.qpu:
                 self.sampler_kwargs.update({
                     'chain_strength': 1.5*abs(max(qubo.values(), key=abs)),
-                    'num_reads': 500
+                    'num_reads': 1000
                 })
 
             retries = 10
