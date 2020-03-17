@@ -4,7 +4,7 @@ from experiment_code.run_and_plot_TSP import RunExperimentsAndPlotStatsTSP
 # Run this file from QAP-Quantum-Computing directory
 
 # number of trials of experiment
-num_trials = 2
+num_trials = 10
 # type of sampler, choose between 'QPU', 'SA', or 'Tabu'
 sampler = 'Tabu'
 
