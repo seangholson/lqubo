@@ -142,10 +142,10 @@ class LocalQUBOIterativeSolver(Solver):
         # Initialize type of experiment
         # When running a timed experiment there is a high number of iterations and a 30 sec wall clock
         # When running a iteration experiment there is a iteration limit of 30 and no wall clock
-        if experiment_type == 'time limit':
+        if experiment_type == 'time_lim':
             self.n_iters = 1000
             self.time_limit = 30
-        elif experiment_type == 'iteration limit':
+        elif experiment_type == 'iter_lim':
             self.n_iters = 30
             self.time_limit = False
 

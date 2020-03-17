@@ -6,16 +6,18 @@ import matplotlib.pyplot as plt
 
 class RunExperimentsAndPlotStatsQAP:
 
-    def __init__(self, num_trials=None, sampler=None):
+    def __init__(self, num_trials=None, sampler=None, save_csv=None):
 
         self.num_trials = num_trials
         self.sampler = sampler
+        self.problem_type = 'qap'
+        self.save_csv = save_csv
 
-        experiment_type_and_of_lqubo_had = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_had = {'time_lim': {'percent error': [[], []],
                                                            'failure to obtain optimal': [[], []],
                                                            'timing code': [[], []],
                                                            'number of iterations': [[], []]},
-                                            'iteration limit': {'percent error': [[], []],
+                                            'iter_lim': {'percent error': [[], []],
                                                                 'failure to obtain optimal': [[], []],
                                                                 'timing code': [[], []],
                                                                 'number of iterations': [[], []]},
@@ -23,11 +25,11 @@ class RunExperimentsAndPlotStatsQAP:
                                             'domain': ['4', '6', '8', '10', '12', '14', '16'],
                                             'max hd': [0, 0, 0, 0, 0, 0, 0]}
 
-        experiment_type_and_of_lqubo_nug = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_nug = {'time_lim': {'percent error': [[], []],
                                                            'failure to obtain optimal': [[], []],
                                                            'timing code': [[], []],
                                                            'number of iterations': [[], []]},
-                                            'iteration limit': {'percent error': [[], []],
+                                            'iter_lim': {'percent error': [[], []],
                                                                 'failure to obtain optimal': [[], []],
                                                                 'timing code': [[], []],
                                                                 'number of iterations': [[], []]},
@@ -35,11 +37,11 @@ class RunExperimentsAndPlotStatsQAP:
                                             'domain': ['12', '14', '15', '16a', '16b'],
                                             'max hd': [0, 0, 0, 0, 0]}
 
-        experiment_type_and_of_lqubo_wp_had = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_wp_had = {'time_lim': {'percent error': [[], []],
                                                               'failure to obtain optimal': [[], []],
                                                               'timing code': [[], []],
                                                               'number of iterations': [[], []]},
-                                               'iteration limit': {'percent error': [[], []],
+                                               'iter_lim': {'percent error': [[], []],
                                                                    'failure to obtain optimal': [[], []],
                                                                    'timing code': [[], []],
                                                                    'number of iterations': [[], []]},
@@ -47,11 +49,11 @@ class RunExperimentsAndPlotStatsQAP:
                                                'domain': ['4', '6', '8', '10', '12', '14', '16'],
                                                'max hd': [4.82, 5.92, 7.85, 8.45, 10.07, 10.02, 10.65]}
 
-        experiment_type_and_of_lqubo_wp_nug = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_wp_nug = {'time_lim': {'percent error': [[], []],
                                                               'failure to obtain optimal': [[], []],
                                                               'timing code': [[], []],
                                                               'number of iterations': [[], []]},
-                                               'iteration limit': {'percent error': [[], []],
+                                               'iter_lim': {'percent error': [[], []],
                                                                    'failure to obtain optimal': [[], []],
                                                                    'timing code': [[], []],
                                                                    'number of iterations': [[], []]},
@@ -59,11 +61,11 @@ class RunExperimentsAndPlotStatsQAP:
                                                'domain': ['12', '14', '15', '16a', '16b'],
                                                'max hd': [7.87, 8.78, 8.93, 10.08, 10.27]}
 
-        experiment_type_and_of_lqubo_ws_had = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_ws_had = {'time_lim': {'percent error': [[], []],
                                                               'failure to obtain optimal': [[], []],
                                                               'timing code': [[], []],
                                                               'number of iterations': [[], []]},
-                                               'iteration limit': {'percent error': [[], []],
+                                               'iter_lim': {'percent error': [[], []],
                                                                    'failure to obtain optimal': [[], []],
                                                                    'timing code': [[], []],
                                                                    'number of iterations': [[], []]},
@@ -71,11 +73,11 @@ class RunExperimentsAndPlotStatsQAP:
                                                'domain': ['4', '6', '8', '10', '12', '14', '16'],
                                                'max hd': [0, 0, 0, 0, 0, 0, 0]}
 
-        experiment_type_and_of_lqubo_ws_nug = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_ws_nug = {'time_lim': {'percent error': [[], []],
                                                               'failure to obtain optimal': [[], []],
                                                               'timing code': [[], []],
                                                               'number of iterations': [[], []]},
-                                               'iteration limit': {'percent error': [[], []],
+                                               'iter_lim': {'percent error': [[], []],
                                                                    'failure to obtain optimal': [[], []],
                                                                    'timing code': [[], []],
                                                                    'number of iterations': [[], []]},
@@ -83,11 +85,11 @@ class RunExperimentsAndPlotStatsQAP:
                                                'domain': ['12', '14', '15', '16a', '16b'],
                                                'max hd': [0, 0, 0, 0, 0]}
 
-        experiment_type_and_of_lqubo_wp_and_ws_had = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_wp_and_ws_had = {'time_lim': {'percent error': [[], []],
                                                                      'failure to obtain optimal': [[], []],
                                                                      'timing code': [[], []],
                                                                      'number of iterations': [[], []]},
-                                                      'iteration limit': {'percent error': [[], []],
+                                                      'iter_lim': {'percent error': [[], []],
                                                                           'failure to obtain optimal': [[], []],
                                                                           'timing code': [[], []],
                                                                           'number of iterations': [[], []]},
@@ -95,11 +97,11 @@ class RunExperimentsAndPlotStatsQAP:
                                                       'domain': ['4', '6', '8', '10', '12', '14', '16'],
                                                       'max hd': [4.82, 5.92, 7.85, 8.45, 10.07, 10.02, 10.65]}
 
-        experiment_type_and_of_lqubo_wp_and_ws_nug = {'time limit': {'percent error': [[], []],
+        experiment_type_and_of_lqubo_wp_and_ws_nug = {'time_lim': {'percent error': [[], []],
                                                                      'failure to obtain optimal': [[], []],
                                                                      'timing code': [[], []],
                                                                      'number of iterations': [[], []]},
-                                                      'iteration limit': {'percent error': [[], []],
+                                                      'iter_lim': {'percent error': [[], []],
                                                                           'failure to obtain optimal': [[], []],
                                                                           'timing code': [[], []],
                                                                           'number of iterations': [[], []]},
@@ -117,7 +119,7 @@ class RunExperimentsAndPlotStatsQAP:
 
         self.solvers = ['LQUBO', 'LQUBO WP and WS', 'LQUBO WP', 'LQUBO WS']
         self.qap_instance = ['had', 'nug']
-        self.experiment_type = ['iteration limit', 'time limit']
+        self.experiment_type = ['iter_lim', 'time_lim']
 
         # Initialize objective function vectors for all solvers and qap instances
         for solver in self.solvers:
@@ -135,7 +137,11 @@ class RunExperimentsAndPlotStatsQAP:
                         run_experiment = Experiment(objective_function=self.results_data[solver][instance]['objective function'][of_index],
                                                     num_trials=self.num_trials,
                                                     solver=solver,
+                                                    instance=instance,
+                                                    save_csv=self.save_csv,
+                                                    problem_type=self.problem_type,
                                                     max_hd=self.results_data[solver][instance]['max hd'][of_index],
+                                                    size=self.results_data[solver][instance]['domain'][of_index],
                                                     sampler_type=self.sampler,
                                                     experiment_type=experiment)
                         experiment_stats = ExperimentStatistics(results_dict=run_experiment.run_experiment())
@@ -162,56 +168,56 @@ class RunExperimentsAndPlotStatsQAP:
         plt.figure(figsize=(13, 4))
         plt.subplot(131)
         plt.scatter(self.results_data['LQUBO']['had']['domain'],
-                    self.results_data['LQUBO']['had']['time limit']['percent error'][0])
+                    self.results_data['LQUBO']['had']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO']['had']['domain'],
-                     self.results_data['LQUBO']['had']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO']['had']['time limit']['percent error'][1],
+                     self.results_data['LQUBO']['had']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO']['had']['time_lim']['percent error'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['had']['domain'],
-                    self.results_data['LQUBO WP']['had']['time limit']['percent error'][0])
+                    self.results_data['LQUBO WP']['had']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP']['had']['domain'],
-                     self.results_data['LQUBO WP']['had']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP']['had']['time limit']['percent error'][1],
+                     self.results_data['LQUBO WP']['had']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP']['had']['time_lim']['percent error'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['had']['domain'],
-                    self.results_data['LQUBO WS']['had']['time limit']['percent error'][0])
+                    self.results_data['LQUBO WS']['had']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WS']['had']['domain'],
-                     self.results_data['LQUBO WS']['had']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WS']['had']['time limit']['percent error'][1],
+                     self.results_data['LQUBO WS']['had']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WS']['had']['time_lim']['percent error'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['had']['domain'],
-                    self.results_data['LQUBO WP and WS']['had']['time limit']['percent error'][0])
+                    self.results_data['LQUBO WP and WS']['had']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['had']['domain'],
-                     self.results_data['LQUBO WP and WS']['had']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['had']['time limit']['percent error'][1],
+                     self.results_data['LQUBO WP and WS']['had']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['had']['time_lim']['percent error'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Percent Error')
 
         plt.subplot(132)
         plt.scatter(self.results_data['LQUBO']['had']['domain'],
-                    self.results_data['LQUBO']['had']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO']['had']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO']['had']['domain'],
-                     self.results_data['LQUBO']['had']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO']['had']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO']['had']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO']['had']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['had']['domain'],
-                    self.results_data['LQUBO WP']['had']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP']['had']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP']['had']['domain'],
-                     self.results_data['LQUBO WP']['had']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP']['had']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP']['had']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP']['had']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['had']['domain'],
-                    self.results_data['LQUBO WS']['had']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WS']['had']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WS']['had']['domain'],
-                     self.results_data['LQUBO WS']['had']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WS']['had']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WS']['had']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WS']['had']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['had']['domain'],
-                    self.results_data['LQUBO WP and WS']['had']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP and WS']['had']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['had']['domain'],
-                     self.results_data['LQUBO WP and WS']['had']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['had']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP and WS']['had']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['had']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.ylim(-0.1, 1.1)
         plt.legend(loc='lower right')
@@ -220,28 +226,28 @@ class RunExperimentsAndPlotStatsQAP:
 
         plt.subplot(133)
         plt.scatter(self.results_data['LQUBO']['had']['domain'],
-                    self.results_data['LQUBO']['had']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO']['had']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO']['had']['domain'],
-                     self.results_data['LQUBO']['had']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO']['had']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO']['had']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO']['had']['time_lim']['number of iterations'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['had']['domain'],
-                    self.results_data['LQUBO WP']['had']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP']['had']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP']['had']['domain'],
-                     self.results_data['LQUBO WP']['had']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP']['had']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP']['had']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP']['had']['time_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['had']['domain'],
-                    self.results_data['LQUBO WS']['had']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO WS']['had']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WS']['had']['domain'],
-                     self.results_data['LQUBO WS']['had']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WS']['had']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO WS']['had']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WS']['had']['time_lim']['number of iterations'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['had']['domain'],
-                    self.results_data['LQUBO WP and WS']['had']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP and WS']['had']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['had']['domain'],
-                     self.results_data['LQUBO WP and WS']['had']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['had']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP and WS']['had']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['had']['time_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Number of Iterations')
@@ -254,56 +260,56 @@ class RunExperimentsAndPlotStatsQAP:
         plt.figure(figsize=(13, 4))
         plt.subplot(131)
         plt.scatter(self.results_data['LQUBO']['nug']['domain'],
-                    self.results_data['LQUBO']['nug']['time limit']['percent error'][0])
+                    self.results_data['LQUBO']['nug']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO']['nug']['domain'],
-                     self.results_data['LQUBO']['nug']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO']['nug']['time limit']['percent error'][1],
+                     self.results_data['LQUBO']['nug']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO']['nug']['time_lim']['percent error'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['nug']['domain'],
-                    self.results_data['LQUBO WP']['nug']['time limit']['percent error'][0])
+                    self.results_data['LQUBO WP']['nug']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP']['nug']['domain'],
-                     self.results_data['LQUBO WP']['nug']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP']['nug']['time limit']['percent error'][1],
+                     self.results_data['LQUBO WP']['nug']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP']['nug']['time_lim']['percent error'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['nug']['domain'],
-                    self.results_data['LQUBO WS']['nug']['time limit']['percent error'][0])
+                    self.results_data['LQUBO WS']['nug']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WS']['nug']['domain'],
-                     self.results_data['LQUBO WS']['nug']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WS']['nug']['time limit']['percent error'][1],
+                     self.results_data['LQUBO WS']['nug']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WS']['nug']['time_lim']['percent error'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                    self.results_data['LQUBO WP and WS']['nug']['time limit']['percent error'][0])
+                    self.results_data['LQUBO WP and WS']['nug']['time_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                     self.results_data['LQUBO WP and WS']['nug']['time limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['nug']['time limit']['percent error'][1],
+                     self.results_data['LQUBO WP and WS']['nug']['time_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['nug']['time_lim']['percent error'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Percent Error')
 
         plt.subplot(132)
         plt.scatter(self.results_data['LQUBO']['nug']['domain'],
-                    self.results_data['LQUBO']['nug']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO']['nug']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO']['nug']['domain'],
-                     self.results_data['LQUBO']['nug']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO']['nug']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO']['nug']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO']['nug']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['nug']['domain'],
-                    self.results_data['LQUBO WP']['nug']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP']['nug']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP']['nug']['domain'],
-                     self.results_data['LQUBO WP']['nug']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP']['nug']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP']['nug']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP']['nug']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['nug']['domain'],
-                    self.results_data['LQUBO WS']['nug']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WS']['nug']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WS']['nug']['domain'],
-                     self.results_data['LQUBO WS']['nug']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WS']['nug']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WS']['nug']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WS']['nug']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                    self.results_data['LQUBO WP and WS']['nug']['time limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP and WS']['nug']['time_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                     self.results_data['LQUBO WP and WS']['nug']['time limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['nug']['time limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP and WS']['nug']['time_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['nug']['time_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.ylim(-0.1, 1.1)
         plt.legend(loc='lower right')
@@ -312,28 +318,28 @@ class RunExperimentsAndPlotStatsQAP:
 
         plt.subplot(133)
         plt.scatter(self.results_data['LQUBO']['nug']['domain'],
-                    self.results_data['LQUBO']['nug']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO']['nug']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO']['nug']['domain'],
-                     self.results_data['LQUBO']['nug']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO']['nug']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO']['nug']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO']['nug']['time_lim']['number of iterations'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['nug']['domain'],
-                    self.results_data['LQUBO WP']['nug']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP']['nug']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP']['nug']['domain'],
-                     self.results_data['LQUBO WP']['nug']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP']['nug']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP']['nug']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP']['nug']['time_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['nug']['domain'],
-                    self.results_data['LQUBO WS']['nug']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO WS']['nug']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WS']['nug']['domain'],
-                     self.results_data['LQUBO WS']['nug']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WS']['nug']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO WS']['nug']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WS']['nug']['time_lim']['number of iterations'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                    self.results_data['LQUBO WP and WS']['nug']['time limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP and WS']['nug']['time_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                     self.results_data['LQUBO WP and WS']['nug']['time limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['nug']['time limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP and WS']['nug']['time_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['nug']['time_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Number of Iterations')
@@ -346,56 +352,56 @@ class RunExperimentsAndPlotStatsQAP:
         plt.figure(figsize=(13, 4))
         plt.subplot(131)
         plt.scatter(self.results_data['LQUBO']['had']['domain'],
-                    self.results_data['LQUBO']['had']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO']['had']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO']['had']['domain'],
-                     self.results_data['LQUBO']['had']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO']['had']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO']['had']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO']['had']['iter_lim']['percent error'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['had']['domain'],
-                    self.results_data['LQUBO WP']['had']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO WP']['had']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP']['had']['domain'],
-                     self.results_data['LQUBO WP']['had']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP']['had']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO WP']['had']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP']['had']['iter_lim']['percent error'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['had']['domain'],
-                    self.results_data['LQUBO WS']['had']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO WS']['had']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WS']['had']['domain'],
-                     self.results_data['LQUBO WS']['had']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WS']['had']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO WS']['had']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WS']['had']['iter_lim']['percent error'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['had']['domain'],
-                    self.results_data['LQUBO WP and WS']['had']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO WP and WS']['had']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['had']['domain'],
-                     self.results_data['LQUBO WP and WS']['had']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['had']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO WP and WS']['had']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['had']['iter_lim']['percent error'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Percent Error')
 
         plt.subplot(132)
         plt.scatter(self.results_data['LQUBO']['had']['domain'],
-                    self.results_data['LQUBO']['had']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO']['had']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO']['had']['domain'],
-                     self.results_data['LQUBO']['had']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO']['had']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO']['had']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO']['had']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['had']['domain'],
-                    self.results_data['LQUBO WP']['had']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP']['had']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP']['had']['domain'],
-                     self.results_data['LQUBO WP']['had']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP']['had']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP']['had']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP']['had']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['had']['domain'],
-                    self.results_data['LQUBO WS']['had']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WS']['had']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WS']['had']['domain'],
-                     self.results_data['LQUBO WS']['had']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WS']['had']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WS']['had']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WS']['had']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['had']['domain'],
-                    self.results_data['LQUBO WP and WS']['had']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP and WS']['had']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['had']['domain'],
-                     self.results_data['LQUBO WP and WS']['had']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['had']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP and WS']['had']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['had']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.ylim(-0.1, 1.1)
         plt.legend(loc='lower right')
@@ -404,28 +410,28 @@ class RunExperimentsAndPlotStatsQAP:
 
         plt.subplot(133)
         plt.scatter(self.results_data['LQUBO']['had']['domain'],
-                    self.results_data['LQUBO']['had']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO']['had']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO']['had']['domain'],
-                     self.results_data['LQUBO']['had']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO']['had']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO']['had']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO']['had']['iter_lim']['number of iterations'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['had']['domain'],
-                    self.results_data['LQUBO WP']['had']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP']['had']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP']['had']['domain'],
-                     self.results_data['LQUBO WP']['had']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP']['had']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP']['had']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP']['had']['iter_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['had']['domain'],
-                    self.results_data['LQUBO WS']['had']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO WS']['had']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WS']['had']['domain'],
-                     self.results_data['LQUBO WS']['had']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WS']['had']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO WS']['had']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WS']['had']['iter_lim']['number of iterations'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['had']['domain'],
-                    self.results_data['LQUBO WP and WS']['had']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP and WS']['had']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['had']['domain'],
-                     self.results_data['LQUBO WP and WS']['had']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['had']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP and WS']['had']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['had']['iter_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Timing of code')
@@ -438,56 +444,56 @@ class RunExperimentsAndPlotStatsQAP:
         plt.figure(figsize=(13, 4))
         plt.subplot(131)
         plt.scatter(self.results_data['LQUBO']['nug']['domain'],
-                    self.results_data['LQUBO']['nug']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO']['nug']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO']['nug']['domain'],
-                     self.results_data['LQUBO']['nug']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO']['nug']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO']['nug']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO']['nug']['iter_lim']['percent error'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['nug']['domain'],
-                    self.results_data['LQUBO WP']['nug']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO WP']['nug']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP']['nug']['domain'],
-                     self.results_data['LQUBO WP']['nug']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP']['nug']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO WP']['nug']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP']['nug']['iter_lim']['percent error'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['nug']['domain'],
-                    self.results_data['LQUBO WS']['nug']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO WS']['nug']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WS']['nug']['domain'],
-                     self.results_data['LQUBO WS']['nug']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WS']['nug']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO WS']['nug']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WS']['nug']['iter_lim']['percent error'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                    self.results_data['LQUBO WP and WS']['nug']['iteration limit']['percent error'][0])
+                    self.results_data['LQUBO WP and WS']['nug']['iter_lim']['percent error'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                     self.results_data['LQUBO WP and WS']['nug']['iteration limit']['percent error'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['nug']['iteration limit']['percent error'][1],
+                     self.results_data['LQUBO WP and WS']['nug']['iter_lim']['percent error'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['nug']['iter_lim']['percent error'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Percent Error')
 
         plt.subplot(132)
         plt.scatter(self.results_data['LQUBO']['nug']['domain'],
-                    self.results_data['LQUBO']['nug']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO']['nug']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO']['nug']['domain'],
-                     self.results_data['LQUBO']['nug']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO']['nug']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO']['nug']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO']['nug']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['nug']['domain'],
-                    self.results_data['LQUBO WP']['nug']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP']['nug']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP']['nug']['domain'],
-                     self.results_data['LQUBO WP']['nug']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP']['nug']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP']['nug']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP']['nug']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['nug']['domain'],
-                    self.results_data['LQUBO WS']['nug']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WS']['nug']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WS']['nug']['domain'],
-                     self.results_data['LQUBO WS']['nug']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WS']['nug']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WS']['nug']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WS']['nug']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                    self.results_data['LQUBO WP and WS']['nug']['iteration limit']['failure to obtain optimal'][0])
+                    self.results_data['LQUBO WP and WS']['nug']['iter_lim']['failure to obtain optimal'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                     self.results_data['LQUBO WP and WS']['nug']['iteration limit']['failure to obtain optimal'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['nug']['iteration limit']['failure to obtain optimal'][1],
+                     self.results_data['LQUBO WP and WS']['nug']['iter_lim']['failure to obtain optimal'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['nug']['iter_lim']['failure to obtain optimal'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.ylim(-0.1, 1.1)
         plt.legend(loc='lower right')
@@ -496,28 +502,28 @@ class RunExperimentsAndPlotStatsQAP:
 
         plt.subplot(133)
         plt.scatter(self.results_data['LQUBO']['nug']['domain'],
-                    self.results_data['LQUBO']['nug']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO']['nug']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO']['nug']['domain'],
-                     self.results_data['LQUBO']['nug']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO']['nug']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO']['nug']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO']['nug']['iter_lim']['number of iterations'][1],
                      label='LQUBO')
         plt.scatter(self.results_data['LQUBO WP']['nug']['domain'],
-                    self.results_data['LQUBO WP']['nug']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP']['nug']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP']['nug']['domain'],
-                     self.results_data['LQUBO WP']['nug']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP']['nug']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP']['nug']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP']['nug']['iter_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty')
         plt.scatter(self.results_data['LQUBO WS']['nug']['domain'],
-                    self.results_data['LQUBO WS']['nug']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO WS']['nug']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WS']['nug']['domain'],
-                     self.results_data['LQUBO WS']['nug']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WS']['nug']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO WS']['nug']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WS']['nug']['iter_lim']['number of iterations'][1],
                      label='LQUBO w/ Sorting')
         plt.scatter(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                    self.results_data['LQUBO WP and WS']['nug']['iteration limit']['number of iterations'][0])
+                    self.results_data['LQUBO WP and WS']['nug']['iter_lim']['number of iterations'][0])
         plt.errorbar(self.results_data['LQUBO WP and WS']['nug']['domain'],
-                     self.results_data['LQUBO WP and WS']['nug']['iteration limit']['number of iterations'][0],
-                     yerr=self.results_data['LQUBO WP and WS']['nug']['iteration limit']['number of iterations'][1],
+                     self.results_data['LQUBO WP and WS']['nug']['iter_lim']['number of iterations'][0],
+                     yerr=self.results_data['LQUBO WP and WS']['nug']['iter_lim']['number of iterations'][1],
                      label='LQUBO w/ Penalty and Sorting')
         plt.xlabel('QAP Size')
         plt.ylabel('Timing of code')

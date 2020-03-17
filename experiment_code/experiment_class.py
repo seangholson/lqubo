@@ -7,7 +7,11 @@ class Experiment:
     This class is designed to run multiple trials of a solver for a specified QAP/ TSP and collect data
     """
     def __init__(self,
+                 save_csv=None,
                  max_hd=None,
+                 instance=None,
+                 size=None,
+                 problem_type=None,
                  objective_function=None,
                  num_trials=None,
                  solver=None,
@@ -26,11 +30,16 @@ class Experiment:
         else:
             self.num_trials = 10
 
+        self.instance = instance
+        self.problem_type = problem_type
+        self.size = size
+        self.save_csv = save_csv
+
         # Initialize solver based on type of experiment and sampler and/ or penalty if necessary
 
         if solver == 'LQUBO':
             self.solver_str = 'LQUBO'
-            if experiment_type == 'time limit' or 'iteration limit':
+            if experiment_type == 'time_lim' or 'iteration_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -43,8 +52,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'LQUBO WP':
-            self.solver_str = 'LQUBO WP'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'LQUBO_WP'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -58,8 +67,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'LQUBO WS':
-            self.solver_str = 'LQUBO WS'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'LQUBO_WS'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -72,8 +81,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'LQUBO WP and WS':
-            self.solver_str = 'LQUBO WP and WS'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'LQUBO_WP_and_WS'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -87,8 +96,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'Rand Slice LQUBO':
-            self.solver_str = 'Rand Slice LQUBO'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'Rand_Slice_LQUBO'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -101,8 +110,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'Rand Slice LQUBO WS':
-            self.solver_str = 'Rand Slice LQUBO WS'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'Rand_Slice_LQUBO_WS'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -115,8 +124,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'Rand Slice LQUBO WP':
-            self.solver_str = 'Rand Slice LQUBO WP'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'Rand_Slice_LQUBO_WP'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -130,8 +139,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'Rand Slice LQUBO WP and WS':
-            self.solver_str = 'Rand Slice LQUBO WP and WS'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'Rand_Slice_LQUBO_WP_and_WS'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -145,8 +154,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'HD Slice LQUBO':
-            self.solver_str = 'HD Slice LQUBO'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'HD_Slice_LQUBO'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -159,8 +168,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'HD Slice LQUBO WS':
-            self.solver_str = 'HD Slice LQUBO WS'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'HD_Slice_LQUBO_WS'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -173,8 +182,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'HD Slice LQUBO WP':
-            self.solver_str = 'HD Slice LQUBO WP'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'HD_Slice_LQUBO_WP'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -188,8 +197,8 @@ class Experiment:
             else:
                 raise AttributeError('Invalid type of experiment.')
         elif solver == 'HD Slice LQUBO WP and WS':
-            self.solver_str = 'HD Slice LQUBO WP and WS'
-            if experiment_type == 'time limit' or 'iteration limit':
+            self.solver_str = 'HD_Slice_LQUBO_WP_and_WS'
+            if experiment_type == 'iter_lim' or 'time_lim':
                 self.experiment_str = experiment_type
                 if sampler_type not in ['SA', 'QPU', 'Tabu']:
                     raise AttributeError('Invalid type of sampler.')
@@ -207,7 +216,9 @@ class Experiment:
 
     def run_experiment(self):
         results = dict()
-        results['solver_qap_size_experiment_type'] = [self.solver_str, self.objective_function.n, self.experiment_str]
+        results['solver_size_experiment_type_problem_type_instance'] = [self.solver_str, self.size,
+                                                                        self.experiment_str, self.problem_type,
+                                                                        self.instance, self.save_csv]
         results['approx_ans'] = []
         results['percent_error'] = []
         results['obtain_optimal'] = []

@@ -4,12 +4,14 @@ from experiment_code.run_and_plot_TSP import RunExperimentsAndPlotStatsTSP
 # Run this file from QAP-Quantum-Computing directory
 
 # number of trials of experiment
-num_trials = 10
+num_trials = 2
 # type of sampler, choose between 'QPU', 'SA', or 'Tabu'
 sampler = 'Tabu'
+# toggle the ability to save the csv that comes out of a set of experiments
+save_csv = False
 
-run_qap = RunExperimentsAndPlotStatsQAP(num_trials=num_trials, sampler=sampler)
-# run_tsp = RunExperimentsAndPlotStatsTSP(num_trials=num_trials, sampler=sampler)
+run_qap = RunExperimentsAndPlotStatsQAP(num_trials=num_trials, sampler=sampler, save_csv=save_csv)
+# run_tsp = RunExperimentsAndPlotStatsTSP(num_trials=num_trials, sampler=sampler, save_csv=save_csv)
 
 run_qap.run_experiments()
 # run_tsp.run_experiments()
