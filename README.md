@@ -1,9 +1,9 @@
-###LQUBO Iterative Solver Guide
+# LQUBO Iterative Solver Guide
 
 In this readme we will address the ideas necessary to run a large experiments of the Local QUBO iterative solver using 
 D-Wave quantum annealing
 
-#Necessary imports to run experiments
+## Necessary imports to run experiments
 
 To run the LQUBO iterative solver the following need to be installed in your virtual environment:
 
@@ -16,7 +16,7 @@ To run the LQUBO iterative solver the following need to be installed in your vir
 Note: To run LQUBO iterative solver off of a D-Wave machine, install the dwave-ocean-sdk and use the command 'dwave 
 config create' to enter in your API Token.
 
-#Running Toy Problem
+## Running Toy Problem
 
 In the collect_data directory there is a python file named toy_experiment_runner.py that will allow you to play with
 the parameters of the LQUBO experiment runner.  The code is commented and indicate the types and meaning of each 
@@ -26,13 +26,13 @@ parameter.
 configuration of the file so that the working directory is the main QAP-Quantum-Computing directory.  This allows the
 data/dat files to be imported properly.
 
-#Running Collect Experiment Data file
+## Running Collect Experiment Data file
 
 Under the collect_data dir is a file named collect_experiment_data.py.  This file allows you to run experiments on the 
 suite of qap and tsp problems.  To collect an official set of data with the D-Wave machine you must configure your API
 Token, change the working directory to the main QAP-Quantum-Computing directory, and turn the save_csv boolean to True.
 
-#Additional Files to mess with
+## Additional Files to mess with
 
 In the quality_of_LQUBO_and_methods dir there are 3 files to mess around with. finding_max_hd.py is a class object that 
 can be run from the command line.  For a given LQUBO type with a penalty, this object will return a dictionary of arrays 
