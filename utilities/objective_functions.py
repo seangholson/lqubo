@@ -115,12 +115,7 @@ class TSPObjectiveFunction(ObjectiveFunction):
             _, self.min_v, self.min_x = parse_sln_file(sln_file=sln_file)
 
     def __call__(self, perm):
-        ident = np.identity(self.n)
-        perm_matrix = ident[:, perm]
-        cycle_perm = list(range(self.n))
-        cycle_perm.remove(0)
-        cycle_perm.append(0)
-        cycle_perm_matrix = ident[:, cycle_perm]
-        left_action = np.matmul(perm_matrix, cycle_perm_matrix)
-        right_action = np.matmul(self.dist, perm_matrix)
-        return np.trace(np.matmul(left_action, right_action))
+        perm = list(perm)
+        last_stop = perm[0]
+        perm.append(last_stop)
+        return sum(self.dist[perm[i]][perm[i + 1]] for i in range(self.n))
