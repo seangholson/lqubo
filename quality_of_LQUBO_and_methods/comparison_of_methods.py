@@ -10,6 +10,11 @@ num_trials = 10
 
 max_hd_list = []
 
+"""
+Comparison of methods will allow you to compare the performance of solvers by running experiments for a specified number
+of trials on the Hadley-Rendl problems.  The output is a graph displaying the percent error of the solvers.
+"""
+
 
 def select_max_hd(solver_str, index):
     global max_hd_list

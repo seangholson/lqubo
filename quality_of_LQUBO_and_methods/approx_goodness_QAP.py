@@ -23,8 +23,8 @@ class ObjectiveFunction:
 
 class LocalQUBOGoodness(ObjectiveFunction):
     """
-    The Local-QUBO Solver uses a switch/permutation network to encode the QAP permutation
-    in a bitstring.
+    For a specified objective function and LQUBO type, LocalQUBOGoodness class has 2 useful visual functions that can
+    be run from the command line.
     """
     def __init__(self,
                  objective_function=None,
@@ -130,6 +130,12 @@ class LocalQUBOGoodness(ObjectiveFunction):
                     self.qubo[i][j] = self.form_qubo[0][(i, j)]
 
     def plot_goodness(self, hamming_dist):
+
+        """
+        Given a specified hamming dist (int), plot_goodness will produce a scatter plot of the LQUBO change in objective
+        function versus the actual change in objective function.
+        """
+
         if hamming_dist:
             hamming_dist = hamming_dist
         else:
@@ -177,6 +183,12 @@ class LocalQUBOGoodness(ObjectiveFunction):
         plt.show()
 
     def plot_r_squared(self):
+
+        """
+        plot_r_squared function will take objective function from the base class and produce multiple scatter plots to
+        retrieve the R squared value for a specified hamming distance.  Then for a hamming dist from 1 to 20 it will
+        produce a plot of the R squared val versus the input hamming dist.
+        """
 
         def swap(input_list, first_entry, second_entry):
             input_list[first_entry], input_list[second_entry] = input_list[second_entry], input_list[first_entry]

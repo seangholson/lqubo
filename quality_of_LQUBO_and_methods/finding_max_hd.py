@@ -10,7 +10,11 @@ import time
 
 
 class MaxHDSolver:
-
+    """
+    MaxHDSolver class can be run from the command line and given the full suite of qap, tsp, had, and nug instances will
+    display an a array of 'good' max hd values to use for LQUBOs with a penalty.  This is based on the R squared value
+    of the hamming distance plots.
+    """
     def __init__(self,
                  hd_slice=None,
                  num_points=200,
@@ -31,6 +35,10 @@ class MaxHDSolver:
 
         self.max_hd_dict = {'had': had, 'nug': nug, 'total time to compute max hd code': []}
         self.lqubo_type = lqubo_type
+
+        """
+        Generates and organizes all objective functions to be used later
+        """
 
         for instance in ['had', 'nug']:
             for size in self.max_hd_dict[instance]['instances']:
@@ -58,6 +66,15 @@ class MaxHDSolver:
                     start_time = time.time()
                     max_hd_list = []
                     for iteration in range(100):
+
+                        """
+                        For each iteration, this function we will generate a random switch setting and build a LQUBO
+                        around it.  Given that LQUBO it will generate the R squared of the LQUBO scatter plot and will 
+                        increase in hamming dist if the R squared is above the 0.05 cutoff.  When a specified hamming 
+                        dist is below the 0.05 cutoff it will be recorded.  When the 100 iterations are over, the val in
+                        the max hd array is the average of each cutoff hamming distance.
+                        """
+
                         objective_function = self.max_hd_dict[instance][problem]['objective function'][problem_index]
 
                         s = SortingNetwork(objective_function.n)
@@ -138,6 +155,12 @@ class MaxHDSolver:
                     end_time = time.time()
                     self.max_hd_dict[instance][problem]['max hd vals'].append(avg_max_hd)
                     self.max_hd_dict[instance][problem]['time to compute max hd'].append(end_time - start_time)
+
+        """
+        In addition to computing the max hd val the max hd dict will record the total amount of time it took to generate
+        the data as well as the time to compute the max hd for a specified objective function
+        """
+
         end_code = time.time()
         self.max_hd_dict['total time to compute max hd code'].append(end_code - start_code)
         return self.max_hd_dict['had']['qap']['max hd vals'], self.max_hd_dict['had']['tsp']['max hd vals'], self.max_hd_dict['nug']['qap']['max hd vals'], self.max_hd_dict['nug']['tsp']['max hd vals'],
