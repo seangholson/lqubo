@@ -30,8 +30,8 @@ class MaxHDSolver:
         nug_qap = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
         nug_tsp = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
 
-        had = {'qap': had_qap, 'tsp': had_tsp, 'instances': ['4', '6', '8', '10', '12', '14', '16']}
-        nug = {'qap': nug_qap, 'tsp': nug_tsp, 'instances': ['12', '14', '15', '16a', '16b']}
+        had = {'qap': had_qap, 'tsp': had_tsp, 'instances': ['4', '6', '8', '10', '12', '14', '16', '18', '20']}
+        nug = {'qap': nug_qap, 'tsp': nug_tsp, 'instances': ['12', '14', '15', '16a', '16b', '17', '18', '20']}
 
         self.max_hd_dict = {'had': had, 'nug': nug, 'total time to compute max hd code': []}
         self.lqubo_type = lqubo_type

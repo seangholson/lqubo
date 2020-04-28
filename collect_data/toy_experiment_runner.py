@@ -31,7 +31,7 @@ experiment_type = 'iter_lim'
 Num trials is the number of trials you want to execute in a single experiment
 """
 
-num_trials = 10
+num_trials = 2
 
 """
 With the solver parameter you have a number of options to play with.  Though we have not talked about it as much,
@@ -76,7 +76,7 @@ its response so using the sorting method with this sampler doesn't have much of 
 'QPU' is the option to solve QUBOs using D-Wave quantum annealing hardware.  This will work when your API token is 
 configured.
 """
-sampler = 'Tabu'
+sampler = 'QPU'
 
 experiment = Experiment(save_csv=save_csv,
                         max_hd=max_hd,
