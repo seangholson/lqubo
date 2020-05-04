@@ -8,7 +8,7 @@ num_trials = 2
 # type of sampler, choose between 'QPU', 'SA', or 'Tabu'
 sampler = 'Tabu'
 # toggle the ability to save the csv that comes out of a set of experiments
-save_csv = False
+save_csv = True
 
 run_qap = RunExperimentsAndPlotStatsQAP(num_trials=num_trials, sampler=sampler, save_csv=save_csv)
 # run_tsp = RunExperimentsAndPlotStatsTSP(num_trials=num_trials, sampler=sampler, save_csv=save_csv)
