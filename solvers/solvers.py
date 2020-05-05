@@ -134,7 +134,7 @@ class LocalQUBOIterativeSolver(Solver):
         elif dwave_sampler == 'Tabu':
             self.dwave_solver = TabuSampler()
             self.sampler_kwargs = {
-                'num_reads': 10
+                'num_reads': 500
             }
 
         self.stopwatch = 0
