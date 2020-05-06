@@ -21,6 +21,7 @@ class Experiment:
         # Initialize objective function
         if objective_function:
             self.objective_function = objective_function
+            self.answer = objective_function.min_v
         else:
             raise AttributeError('Objective function missing.')
 
@@ -216,14 +217,19 @@ class Experiment:
 
     def run_experiment(self):
         results = dict()
-        results['solver_size_experiment_type_problem_type_instance'] = [self.solver_str, self.size,
-                                                                        self.experiment_str, self.problem_type,
-                                                                        self.instance, self.save_csv]
+        results['solver, size, experiment type, problem type, instance, answer'] = [self.solver_str,
+                                                                                    self.size,
+                                                                                    self.experiment_str,
+                                                                                    self.problem_type,
+                                                                                    self.instance,
+                                                                                    self.save_csv,
+                                                                                    self.answer]
         results['approx_ans'] = []
         results['percent_error'] = []
         results['obtain_optimal'] = []
         results['timing_code'] = []
         results['number_of_iterations'] = []
+        results['v_vec'] = []
 
         for trial in range(self.num_trials):
             print('{} {} {} {} trial {} {}'.format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
@@ -241,6 +247,7 @@ class Experiment:
             results['timing_code'].append(solver_ans[3])
             results['number_of_iterations'].append(solver_ans[4])
             results['trial_{}_data_dict'.format(trial + 1)] = solver_ans[5]
+            results['v_vec'].append(solver_ans[6])
 
         print('{} {} {} {}'.format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                                    self.objective_function.dat_file,

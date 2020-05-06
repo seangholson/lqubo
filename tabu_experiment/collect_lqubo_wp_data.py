@@ -3,7 +3,7 @@ from tabu_experiment.run_qap_experiments_class import RunExperimentsAndPlotStats
 # Run this file from QAP-Quantum-Computing directory
 
 # number of trials of experiment
-num_trials = 100
+num_trials = 2
 
 # type of sampler, choose between 'QPU', 'SA', or 'Tabu'
 sampler = 'Tabu'

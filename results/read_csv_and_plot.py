@@ -59,7 +59,7 @@ def plot_had_data():
     a[1].set_xlabel('QAP Size')
     a[1].set_ylabel('Time of Code (sec)')
     a[1].legend(loc='upper left')
-    plt.suptitle('Hadley-Rendl-Wolkowicz 30 Iterations')
+    plt.suptitle('Hadley-Rendl-Wolkowicz 50 Iterations')
     plt.show()
 
 
@@ -87,7 +87,7 @@ def plot_nug_data():
     a[1].set_xlabel('QAP Size')
     a[1].set_ylabel('Time of Code (sec)')
     a[1].legend(loc='upper left')
-    plt.suptitle('Nugent-Vollmann-Ruml 30 Iterations')
+    plt.suptitle('Nugent-Vollmann-Ruml 50 Iterations')
     plt.show()
 
 

@@ -134,7 +134,7 @@ class LocalQUBOIterativeSolver(Solver):
         elif dwave_sampler == 'Tabu':
             self.dwave_solver = TabuSampler()
             self.sampler_kwargs = {
-                'num_reads': 500
+                'num_reads': 250
             }
 
         self.stopwatch = 0
@@ -146,7 +146,7 @@ class LocalQUBOIterativeSolver(Solver):
             self.n_iters = 1000
             self.time_limit = 30
         elif experiment_type == 'iter_lim':
-            self.n_iters = 30
+            self.n_iters = 50
             self.time_limit = False
 
         if max_hd:
@@ -281,7 +281,7 @@ class LocalQUBOIterativeSolver(Solver):
             percent_error = abs(self.solution - lqubo_ans) / self.solution * 100
             obtain_optimal = 0
 
-        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, data_dict
+        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, data_dict, data_dict['v_vec']
 
 
 class NaturalEncodingSolver(Solver):
