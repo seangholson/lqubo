@@ -1,47 +1,46 @@
-# LQUBO Iterative Solver Guide
+# LQUBO: Local QUBO Iterative Solver
 
-In this readme we will address the ideas necessary to run a large experiments of the Local QUBO iterative solver using 
-D-Wave quantum annealing
+The Local Quadratic Unconstrained Binary Optimization  package augments 
+current-generation Noisy Intermediate Scale Quantum (NISQ) computers
+such as the [D-Wave Systems](https://www.dwavesys.com/) quantum 
+annealer.
 
-## Necessary imports to run experiments
+## Installation
 
-To run the LQUBO iterative solver the following need to be installed in your virtual environment:
+The LQUBO package is in active pre-alpha development.  The recommended
+procedure for use is to:
 
--numpy
+* Clone the git repository
+* Create and activate a virtual environment
+* Pip install the package
 
--pandas
+For example,
 
--dwave-ocean-sdk
+    $ git clone git@github.com:seangholson/lqubo.git
+    $ python -m venv path/to/your/new/quantum_computing_venv
+    $ source path/to/your/new/quantum_computing_venv/bin/activate
+    $ pip install --upgrade pip
+    $ pip install -e lqubo
 
-Note: To run LQUBO iterative solver off of a D-Wave machine, install the dwave-ocean-sdk and use the command 'dwave 
-config create' to enter in your API Token.
+This installation procedure will install the requirements identified in
+the 
+[setup.py](https://github.com/seangholson/lqubo/blob/master/setup.py)
+file, which includes the 
+[dwave-ocean-sdk](https://github.com/dwavesystems/dwave-ocean-sdk).  
 
-## Running Toy Problem
+## Verifying Your Install
 
-In the collect_data directory there is a python file named toy_experiment_runner.py that will allow you to play with
-the parameters of the LQUBO experiment runner.  The code is commented and indicate the types and meaning of each 
-parameter.
+The cloned repository has test scripts designed to verify that your 
+installation was successful.  The scripts are located in the `examples/`
+directory.  Run them to check that everything is working.  
 
-**IMPORTANT:** The toy experiment runner as well as a handful of other files in this repo require you to edit the 
-configuration of the file so that the working directory is the main QAP-Quantum-Computing directory.  This allows the
-data/dat files to be imported properly.
+## NOTE: The D-Wave Ocean SDK
 
-## Running Collect Experiment Data file
+The LQUBO is designed primarily for the D-Wave Systems Ocean SDK.  The
+SDK comes packaged with classical, offline QUBO samplers that emulate
+the results given by their quantum annealing hardware.  This is 
+sufficient for algorithm prototyping.  
 
-Under the collect_data dir is a file named collect_experiment_data.py.  This file allows you to run experiments on the 
-suite of qap and tsp problems.  To collect an official set of data with the D-Wave machine you must configure your API
-Token, change the working directory to the main QAP-Quantum-Computing directory, and turn the save_csv boolean to True.
-
-## Additional Files to mess with
-
-In the quality_of_LQUBO_and_methods dir there are 3 files to mess around with. finding_max_hd.py is a class object that 
-can be run from the command line.  For a given LQUBO type with a penalty, this object will return a dictionary of arrays 
-that specify what the best max_hd value is for a given instance and size of qap or tsp.  With those values precomputed,
-they can be fed into comparison_of_methods.py which will compare the percent error of any selected solvers.  Lastly,
-approx_goodness_qap.py is another class object that can be run from the command line.  For a specified objective 
-function and hamming dist, it will produce the scatter plots of the LQUBO change in objective vs actual change in 
-objective using the plot_goodness function.  Furthermore, using plot_r_squared function on a specified objective 
-function will plot the R squared of the scatter plots as a function of hamming distance.
-
-
-
+However, to use their actual quantum annealing hardware, please visit 
+[their website](https://docs.ocean.dwavesys.com/en/latest/getting_started.html#gs) 
+for  additional information.
