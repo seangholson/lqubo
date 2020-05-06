@@ -1,22 +1,25 @@
-from utilities.objective_functions import QAPObjectiveFunction
-from experiment_code.experiment_class import Experiment
-from experiment_code.statistics_class import ExperimentStatistics
+# Examples
 
-"""
+The scripts in this directory are designed to illustrate uses of various
+submodules, as well as test that the installation of the `lqubo` package 
+was successful.  
+
+## The `Experiment` Runner
+
 To get familiar with the experiment runner, this file is meant to mess 
 around with the parameters that feed into the experiment runner.  Here 
-you can tweak the objective function file...
+you can tweak the objective function file.
 
 Save csv is a boolean to decide if you want your experiment to be 
 exported as a csv.  For our purposes, this should be False until you are 
 ready to run the full suite of problems on the D-Wave machine in 
-collect_experiment_data.py.
+`collect_experiment_data.py`.
 
 Currently Hadley - Rendl size 16 however you may load in any objective 
 function in the data/dat dir.
 
 Experiment type allows you to switch between a time limit experiment 
-('time_lim') or a iteration limit experiment ('iter_lim').
+(`'time_lim'`) or a iteration limit experiment (`'iter_lim'`).
 
 Num trials is the number of trials you want to execute in a single 
 experiment.
@@ -38,18 +41,18 @@ penalty), WS (with sorting), WP and WS (with penalty and sorting).
 
 To summarize, there are 12 possible solver strings to pick from:
 
-'LQUBO'
-'LQUBO WP'
-'LQUBO WS'
-'LQUBO WP and WS'
-'Rand Slice LQUBO'
-'Rand Slice LQUBO WS'
-'Rand Slice LQUBO WP'
-'Rand Slice LQUBO WP and WS'
-'HD Slice LQUBO'
-'HD Slice LQUBO WS'
-'HD Slice LQUBO WP'
-'HD Slice LQUBO WP and WS'
+* `'LQUBO'`
+* `'LQUBO WP'`
+* `'LQUBO WS'`
+* `'LQUBO WP and WS'`
+* `'Rand Slice LQUBO'`
+* `'Rand Slice LQUBO WS'`
+* `'Rand Slice LQUBO WP'`
+* `'Rand Slice LQUBO WP and WS'`
+* `'HD Slice LQUBO'`
+* `'HD Slice LQUBO WS'`
+* `'HD Slice LQUBO WP'`
+* `'HD Slice LQUBO WP and WS'`
 
 Note: if a solver doesn't have a penalty, set the max hamming distance 
 parameter to 0.
@@ -57,46 +60,13 @@ parameter to 0.
 Sampler parameter allows you to choose one of 3 D-Wave samplers to 
 minimize your QUBO:
 
-'Tabu' is a classical tabu algorithm.  This is the fastest of the 
+`'Tabu'` is a classical tabu algorithm.  This is the fastest of the 
 classical methods but there is not much variation in its response so 
 using the sorting method with this sampler doesn't have much of an 
 effect on performance.
 
-'SA' is a classical simulated annealing algorithm.  This algorithm takes 
+`'SA'` is a classical simulated annealing algorithm.  This algorithm takes 
 the most time of the 3 samplers.
 
-'QPU' is the option to solve QUBOs using D-Wave quantum annealing 
+`'QPU'` is the option to solve QUBOs using D-Wave quantum annealing 
 hardware.  This will only work when your D-Wave API token is configured.
-"""
-
-save_csv = False
-obj_fcn = QAPObjectiveFunction(dat_file='had16.dat', sln_file='had16.sln')
-experiment_type = 'iter_lim'
-num_trials = 2
-solver = 'LQUBO WP'
-max_hd = 11
-sampler = 'Tabu'
-
-experiment = Experiment(save_csv=save_csv,
-                        max_hd=max_hd,
-                        objective_function=obj_fcn,
-                        num_trials=num_trials,
-                        solver=solver,
-                        sampler_type=sampler,
-                        experiment_type=experiment_type)
-experiment_stats = ExperimentStatistics(experiment.run_experiment())
-experiment_stats_result = experiment_stats.run_stats()
-
-pct_err = experiment_stats_result['percent_error']
-freq_opt = experiment_stats_result['obtain_optimal']
-timing = experiment_stats_result['timing_code']
-n_iters = experiment_stats_result['number_of_iterations']
-
-print('Percent error mean and standard deviation:')
-print('\t{}'.format(pct_err))
-print('Frequency of obtaining optimal mean and standard deviation:')
-print('\t{}'.format(freq_opt))
-print('Timing of code mean and standard deviation:')
-print('\t{}'.format(timing))
-print('Number of iterations mean and standard deviation:')
-print('\t{}'.format(n_iters))

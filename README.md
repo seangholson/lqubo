@@ -34,7 +34,7 @@ The cloned repository has test scripts designed to verify that your
 installation was successful.  The scripts are located in the `examples/`
 directory.  Run them to check that everything is working.  
 
-## NOTE about the D-Wave Ocean SDK
+## NOTE: The D-Wave Ocean SDK
 
 The LQUBO is designed primarily for the D-Wave Systems Ocean SDK.  The
 SDK comes packaged with classical, offline QUBO samplers that emulate
