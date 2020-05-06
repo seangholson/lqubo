@@ -1,0 +1,9 @@
+# Byte-compiled code:
+__pycache__/
+
+# Pycharm artifacts:
+.idea/
+
+# pip install artifacts:
+lqubo.egg-info/
+build/
