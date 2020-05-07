@@ -14,13 +14,13 @@ class ExperimentStatistics:
         else:
             raise AttributeError('Results missing.')
 
-        self.solver = self.results_dict['solver, size, experiment type, problem type, instance'][0]
-        self.size = self.results_dict['solver, size, experiment type, problem type, instance'][1]
-        self.experiment_type = self.results_dict['solver, size, experiment type, problem type, instance'][2]
-        self.problem_type = self.results_dict['solver, size, experiment type, problem type, instance'][3]
-        self.instance = self.results_dict['solver, size, experiment type, problem type, instance'][4]
-        self.save_csv = self.results_dict['solver, size, experiment type, problem type, instance'][5]
-        self.answer = self.results_dict['solver, size, experiment type, problem type, instance'][6]
+        self.solver = self.results_dict['solver, size, experiment type, problem type, instance, answer'][0]
+        self.size = self.results_dict['solver, size, experiment type, problem type, instance, answer'][1]
+        self.experiment_type = self.results_dict['solver, size, experiment type, problem type, instance, answer'][2]
+        self.problem_type = self.results_dict['solver, size, experiment type, problem type, instance, answer'][3]
+        self.instance = self.results_dict['solver, size, experiment type, problem type, instance, answer'][4]
+        self.save_csv = self.results_dict['solver, size, experiment type, problem type, instance, answer'][5]
+        self.answer = self.results_dict['solver, size, experiment type, problem type, instance, answer'][6]
 
         self.approx_ans = self.results_dict['approx_ans']
         self.percent_error = self.results_dict['percent_error']
@@ -39,7 +39,7 @@ class ExperimentStatistics:
 
         if self.save_csv:
             stats_df = pd.DataFrame(data=stats)
-            stats_df.to_csv('./results/' + self.problem_type + '/' + self.instance + '/' + self.experiment_type + '/' +
+            stats_df.to_csv('./results/' + '/qap/' + self.instance + '/' + self.experiment_type + '/' +
                             self.solver + '_' + self.size + '.csv')
 
         if self.save_csv and int(self.size) == 20:
@@ -63,7 +63,8 @@ class ExperimentStatistics:
             domain = [(i+1)*5 for i in range(len(convergence_vec))]
             convergence_dict = {'domain': domain, 'convergence percent error vals': percent_error_convergence_vals}
             convergence_df = pd.DataFrame(data=convergence_dict)
-            convergence_df.to_csv('./results/' + self.instance + '_' + self.solver + '_' + self.size + '.csv')
+            convergence_df.to_csv('./results/' + '/convergence/' + self.instance + '_' + self.solver + '_' + self.size
+                                  + '.csv')
 
         return stats
 

@@ -50,6 +50,8 @@ class Experiment:
                  problem_type=None,
                  objective_function=None,
                  num_trials=None,
+                 num_reads=None,
+                 num_iters=None,
                  solver=None,
                  sampler_type=None,
                  experiment_type=None):
@@ -57,6 +59,7 @@ class Experiment:
         # Initialize objective function
         if objective_function:
             self.objective_function = objective_function
+            self.answer = objective_function.min_v
         else:
             raise AttributeError('Objective function missing.')
 
@@ -98,17 +101,20 @@ class Experiment:
                                                lqubo_type=self.solver_str,
                                                selection_type=selection_type,
                                                max_hd=max_hd,
-                                               experiment_type=experiment_type)
+                                               experiment_type=experiment_type,
+                                               num_reads=num_reads,
+                                               num_iters=num_iters)
 
     def run_experiment(self):
         results = dict()
-        main_key = 'solver_size_experiment_type_problem_type_instance'
+        main_key = 'solver, size, experiment type, problem type, instance, answer'
         results[main_key] = [self.solver_str,
                              self.size,
                              self.experiment_str,
                              self.problem_type,
                              self.instance,
-                             self.save_csv]
+                             self.save_csv,
+                             self.answer]
         results['approx_ans'] = []
         results['percent_error'] = []
         results['obtain_optimal'] = []

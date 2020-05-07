@@ -93,6 +93,8 @@ class LocalQUBOIterativeSolver(Solver):
                  max_hd=None,
                  selection_type='check and select',
                  experiment_type=None,
+                 num_reads=None,
+                 num_iters=None,
                  network_type='minimum'):
         super().__init__(objective_function=objective_function)
 
@@ -128,14 +130,24 @@ class LocalQUBOIterativeSolver(Solver):
                 self.sampler_kwargs = dict()
         elif dwave_sampler == 'SA':
             self.dwave_solver = SimulatedAnnealingSampler()
-            self.sampler_kwargs = {
-                'num_reads': 25
-            }
+            if num_reads:
+                self.sampler_kwargs = {
+                    'num_reads': num_reads
+                }
+            else:
+                self.sampler_kwargs = {
+                    'num_reads': 25
+                }
         elif dwave_sampler == 'Tabu':
             self.dwave_solver = TabuSampler()
-            self.sampler_kwargs = {
-                'num_reads': 250
-            }
+            if num_reads:
+                self.sampler_kwargs = {
+                    'num_reads': num_reads
+                }
+            else:
+                self.sampler_kwargs = {
+                    'num_reads': 250
+                }
 
         self.stopwatch = 0
 
@@ -145,7 +157,11 @@ class LocalQUBOIterativeSolver(Solver):
         if experiment_type == 'time_lim':
             self.n_iters = 1000
             self.time_limit = 30
-        elif experiment_type == 'iter_lim':
+
+        if experiment_type == 'iter_lim' and num_iters:
+            self.n_iters = num_iters
+            self.time_limit = False
+        else:
             self.n_iters = 50
             self.time_limit = False
 

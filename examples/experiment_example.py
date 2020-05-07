@@ -5,20 +5,22 @@ from utilities.objective_functions import QAPObjectiveFunction
 
 
 # The objective function to test:
-obj_f = QAPObjectiveFunction(dat_file='had16.dat', 
-                               sln_file='had16.sln')
+obj_f = QAPObjectiveFunction(dat_file='had20.dat',
+                             sln_file='had20.sln')
 
 experiment_config = {
-    'save_csv': False,
+    'save_csv': True,
     'experiment_type': 'iter_lim',
     'num_trials': 2,
     'solver': 'LQUBO WP',
     'max_hd': 11,
     'sampler_type': 'Tabu',
     'objective_function': obj_f,
+    'num_reads': 1,
+    'num_iters': None
 }
 
-test_experiment = Experiment(**experiment_config)
+test_experiment = Experiment(**experiment_config, size='20', instance='had')
 experiment_data = test_experiment.run_experiment()
 experiment_stats = ExperimentStatistics(experiment_data)
 experiment_stats_result = experiment_stats.run_stats()
