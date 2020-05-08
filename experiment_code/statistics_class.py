@@ -39,8 +39,8 @@ class ExperimentStatistics:
 
         if self.save_csv:
             stats_df = pd.DataFrame(data=stats)
-            stats_df.to_csv('./results/' + '/qap/' + self.instance + '/' + self.experiment_type + '/' +
-                            self.solver + '_' + self.size + '.csv')
+            stats_df.to_csv(('./results/' + '/qap/' + self.instance + '/' + self.experiment_type + '/' +
+                            self.solver + '_' + self.size + '.csv').replace(' ', '_'))
 
         if self.save_csv and int(self.size) == 20:
             #  If the problem is of size 20 and you are saving CSV files, you can see the convergence of the LQUBO
@@ -63,8 +63,8 @@ class ExperimentStatistics:
             domain = [(i+1)*5 for i in range(len(convergence_vec))]
             convergence_dict = {'domain': domain, 'convergence percent error vals': percent_error_convergence_vals}
             convergence_df = pd.DataFrame(data=convergence_dict)
-            convergence_df.to_csv('./results/' + '/convergence/' + self.instance + '_' + self.solver + '_' + self.size
-                                  + '.csv')
+            convergence_df.to_csv(('./results/' + '/convergence/' + self.instance + '_' + self.solver + '_' + self.size
+                                  + '.csv').replace(' ', '_'))
 
         return stats
 
