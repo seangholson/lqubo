@@ -39,7 +39,7 @@ class ExperimentStatistics:
 
         if self.save_csv:
             stats_df = pd.DataFrame(data=stats)
-            stats_df.to_csv(('./results/' + '/qap/' + self.instance + '/' + self.experiment_type + '/' +
+            stats_df.to_csv(('./results/' + 'qap/' + self.instance + '/' + self.experiment_type + '/' +
                             self.solver + '_' + self.size + '.csv').replace(' ', '_'))
 
         if self.save_csv and int(self.size) == 20:
@@ -66,9 +66,8 @@ class ExperimentStatistics:
             domain = [(i+1)*5 for i in range(len(convergence_vec))]
             convergence_dict = {'domain': domain, 'convergence percent error vals': percent_error_convergence_vals}
             convergence_df = pd.DataFrame(data=convergence_dict)
-            convergence_df.to_csv(('./results/' + '/convergence/' + self.instance + '_' + self.solver + '_' + self.size
+            convergence_df.to_csv(('./results/' + 'convergence/' + self.instance + '_' + self.solver + '_' + self.size
                                   + '.csv').replace(' ', '_'))
-
         return stats
 
 
