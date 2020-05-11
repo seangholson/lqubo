@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 size_domain = {'had': ['4', '6', '8', '10', '12', '14', '16', '18', '20'],
                'nug': ['12', '14', '15', '16a', '16b', '17', '18', '20']}
 
-iteration_domain = [(i+1)*5 for i in range(10)]
+known_num_iterations = 50
+iteration_domain = [(i+1)*5 for i in range(int(known_num_iterations/5))]
 
 convergence_data = {'had': {
     'LQUBO': [],
@@ -22,7 +23,7 @@ convergence_data = {'had': {
 
 for instance in convergence_data:
     for solver in convergence_data[instance]:
-        for iteration_number in range(10):
+        for iteration_number in range(int(known_num_iterations/5)):
             convergence_data[instance][solver].append(pd.read_csv("./convergence/" + instance + "_" + solver +
                                                                   "_20.csv")['convergence percent error vals'][
                                                           iteration_number]*100)

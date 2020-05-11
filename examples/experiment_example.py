@@ -11,13 +11,13 @@ obj_f = QAPObjectiveFunction(dat_file='had20.dat',
 experiment_config = {
     'save_csv': True,
     'experiment_type': 'iter_lim',
-    'num_trials': 5,
-    'solver': 'LQUBO WP and WS',
+    'num_trials': 2,
+    'solver': 'LQUBO WP',
     'max_hd': 11,
     'sampler_type': 'Tabu',
     'objective_function': obj_f,
     'num_reads': 1,
-    'num_iters': None
+    'num_iters': 30  # Should be a multiple of 5
 }
 
 test_experiment = Experiment(**experiment_config, size='20', instance='had')

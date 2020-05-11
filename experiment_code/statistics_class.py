@@ -45,9 +45,12 @@ class ExperimentStatistics:
         if self.save_csv and int(self.size) == 20:
             #  If the problem is of size 20 and you are saving CSV files, you can see the convergence of the LQUBO
             #  algorithm by looking at the convergence CSV
-            convergence_vec = [[], [], [], [], [], [], [], [], [], []]
+            len_convergence_vec = (len(self.v_vectors[0])-1)/5
+            convergence_vec = []
+            for _ in range(int(len_convergence_vec)):
+                convergence_vec.append([])
             # arrays in convergence_vec will be filled with the min val of algorithm for every 5 iterations
-            # with 50 iterations, there are 10 arrays to be filled
+            # for example, if run for 50 iterations there are 10 arrays to be filled
             for vec in self.v_vectors:
                 for iteration in range(len(convergence_vec)):
                     iteration_number = (iteration+1)*5
