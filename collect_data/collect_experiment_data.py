@@ -4,6 +4,7 @@ from utilities.objective_functions import QAPObjectiveFunction
 import argparse
 import numpy as np
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--sge_task_id",
                     type=int,
@@ -39,7 +40,7 @@ obj_array = [
 solver_array = [
     'LQUBO',
     'LQUBO WP',
-    'LQUBO WP',
+    'LQUBO WS',
     'LQUBO WP and WS'
 ]
 
@@ -70,6 +71,7 @@ else:
 experiment = Experiment(
     save_csv=True,
     max_hd=max_hd,
+    solver=solver,
     objective_function=obj_fcn,
     experiment_type='iter_lim',
     sampler_type='Tabu',
