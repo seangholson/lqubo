@@ -5,8 +5,8 @@ from utilities.objective_functions import QAPObjectiveFunction
 
 
 # The objective function to test:
-obj_f = QAPObjectiveFunction(dat_file='had20.dat',
-                             sln_file='had20.sln')
+obj_f = QAPObjectiveFunction(dat_file='had10.dat',
+                             sln_file='had10.sln')
 
 experiment_config = {
     'save_csv': True,
@@ -20,7 +20,7 @@ experiment_config = {
     'num_iters': 30  # Should be a multiple of 5
 }
 
-test_experiment = Experiment(**experiment_config, size='20', instance='had')
+test_experiment = Experiment(**experiment_config, size='10', instance='had')
 experiment_data = test_experiment.run_experiment()
 experiment_stats = ExperimentStatistics(experiment_data)
 experiment_stats_result = experiment_stats.run_stats()

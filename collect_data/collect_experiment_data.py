@@ -14,7 +14,7 @@ sge_task_id = args.sge_task_id
 
 
 num_trials = 100
-num_iters = 50
+num_iters = 100
 num_reads = 250
 
 obj_array = [
@@ -57,12 +57,14 @@ solver = solver_array[solver_index]
 
 if 'had' in obj_array[obj_index]:
     instance = 'had'
+    size = obj_array[obj_index].replace(instance,'')
     if 'WP' in solver:
         max_hd = max_hd_array[instance][obj_index]
     else:
         max_hd = 0
 else:
     instance = 'nug'
+    size = obj_array[obj_index].replace(instance,'')
     if 'WP' in solver:
         max_hd = max_hd_array[instance][obj_index - 9]
     else:
@@ -76,14 +78,14 @@ experiment = Experiment(
     experiment_type='iter_lim',
     sampler_type='Tabu',
     num_trials=num_trials,
-    size=obj_fcn.n,
+    size=size,
     instance=instance,
     problem_type='QAP',
     num_iters=num_iters,
     num_reads=num_reads
 )
 run_experiment = experiment.run_experiment()
-stats = ExperimentStatistics(results_dict=run_experiment)
+stats = ExperimentStatistics(results_dict=run_experiment).run_stats()
 
 
 
