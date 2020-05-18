@@ -37,7 +37,7 @@ def plot_had_convergence():
     plt.plot(iteration_domain, convergence_data['had']['LQUBO_WP_and_WS'], 'o--', label='LQUBO w/ Penalty & Sorting')
     plt.xlabel('Iteration')
     plt.ylabel('Percent Error')
-    plt.suptitle('Convergence of LQUBO Algorithm')
+    plt.suptitle('Convergence of LQUBO Algorithm Hadley-Rendl-Wolkowicz')
     plt.legend(loc='upper right')
     plt.show()
 
@@ -53,8 +53,8 @@ def plot_nug_convergence():
     plt.plot(iteration_domain, convergence_data['nug']['LQUBO_WP_and_WS'], 'o--', label='LQUBO w/ Penalty & Sorting')
     plt.xlabel('Iteration')
     plt.ylabel('Percent Error')
-    plt.suptitle('Convergence of LQUBO Algorithm')
-    plt.legend(loc='upper left')
+    plt.suptitle('Convergence of LQUBO Algorithm Nugent-Vollmann-Ruml')
+    plt.legend(loc='upper right')
     plt.show()
 
 
