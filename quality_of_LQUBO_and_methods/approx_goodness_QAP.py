@@ -175,7 +175,7 @@ class LocalQUBOGoodness(ObjectiveFunction):
 
         plt.xlabel("true delta obj")
         plt.ylabel("local qubo delta obj")
-        plt.title('{} size = {}'.format(self.OF_type, self.n_qap))
+        plt.title('n = {} {}, Activation Vector HD = {} '.format(self.n_qap, self.OF_type, self.hd_slice))
 
         plt.axhline(y=0, color='k')
         plt.axvline(x=0, color='k')
@@ -227,9 +227,9 @@ class LocalQUBOGoodness(ObjectiveFunction):
             r_val.append(r_value**2)
             hamming_weight.append(hamming_dist)
 
-        plt.plot(hamming_weight, r_val, label='{} Size = {}, HD Slice vector {}'.format(self.OF_type,
-                                                                                        self.n_qap,
-                                                                                        self.hd_slice))
+        plt.plot(hamming_weight, r_val, label='n = {} {}, activation vector HD = {}'.format(self.n_qap,
+                                                                                            self.OF_type,
+                                                                                            self.hd_slice))
 
         plt.scatter(hamming_weight, r_val)
         plt.xticks(hamming_weight)
