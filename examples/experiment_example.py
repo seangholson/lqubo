@@ -16,7 +16,7 @@ experiment_config = {
     'max_hd': 11,
     'sampler_type': 'Tabu',
     'objective_function': obj_f,
-    'num_reads': 1,
+    'num_reads': 10,
     'num_iters': 30  # Should be a multiple of 5
 }
 
