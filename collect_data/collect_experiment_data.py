@@ -57,7 +57,7 @@ solver = solver_array[solver_index]
 
 if 'had' in obj_array[obj_index]:
     instance = 'had'
-    size = obj_array[obj_index].replace(instance,'')
+    size = obj_array[obj_index].replace(instance, '')
     if 'WP' in solver:
         max_hd = max_hd_array[instance][obj_index]
     else:
