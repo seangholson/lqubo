@@ -41,7 +41,11 @@ solver_array = [
     'LQUBO',
     'LQUBO WP',
     'LQUBO WS',
-    'LQUBO WP and WS'
+    'LQUBO WP and WS',
+    'Rand Slice LQUBO',
+    'Rand Slice LQUBO WS',
+    'HD Slice LQUBO',
+    'HD Slice LQUBO WS'
 ]
 
 max_hd_array = {'had': [4.92, 5.87, 7.92, 8.44, 9.75, 9.77, 10.52, 12.12, 11.7],
@@ -64,7 +68,7 @@ if 'had' in obj_array[obj_index]:
         max_hd = 0
 else:
     instance = 'nug'
-    size = obj_array[obj_index].replace(instance,'')
+    size = obj_array[obj_index].replace(instance, '')
     if 'WP' in solver:
         max_hd = max_hd_array[instance][obj_index - 9]
     else:
