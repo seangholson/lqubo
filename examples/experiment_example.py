@@ -5,14 +5,14 @@ from utilities.objective_functions import QAPObjectiveFunction
 
 
 # The objective function to test:
-obj_f = QAPObjectiveFunction(dat_file='had10.dat',
-                             sln_file='had10.sln')
+obj_f = QAPObjectiveFunction(dat_file='had8.dat',
+                             sln_file='had8.sln')
 
 experiment_config = {
     'save_csv': True,
     'experiment_type': 'iter_lim',
     'num_trials': 2,
-    'solver': 'LQUBO WP',
+    'solver': 'HD Slice LQUBO',
     'max_hd': 11,
     'sampler_type': 'Tabu',
     'objective_function': obj_f,

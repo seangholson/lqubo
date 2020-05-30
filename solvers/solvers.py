@@ -168,31 +168,31 @@ class LocalQUBOIterativeSolver(Solver):
         if max_hd:
             self.max_hd = max_hd
 
-        if lqubo_type == 'LQUBO' or 'LQUBO WS':
+        if lqubo_type in ['LQUBO', 'LQUBO WS']:
             self.form_qubo = LQUBO(objective_function=self.objective_function,
                                    switch_network=self.network,
                                    n_qubo=self.n_qubo)
-        elif lqubo_type == 'LQUBO WP' or 'LQUBO WP and WS':
+        elif lqubo_type in ['LQUBO WP', 'LQUBO WP and WS']:
             self.form_qubo = LQUBOWithPenalty(objective_function=self.objective_function,
                                               switch_network=self.network,
                                               n_qubo=self.n_qubo,
                                               max_hd=self.max_hd)
-        elif lqubo_type == 'Rand Slice LQUBO' or 'Rand Slice LQUBO WS':
+        elif lqubo_type in ['Rand Slice LQUBO', 'Rand Slice LQUBO WS']:
             self.form_qubo = RandSliceLQUBO(objective_function=self.objective_function,
                                             switch_network=self.network,
                                             n_qubo=self.n_qubo)
-        elif lqubo_type == 'Rand Slice LQUBO WP' or 'Rand Slice LQUBO WP and WS':
+        elif lqubo_type in ['Rand Slice LQUBO WP', 'Rand Slice LQUBO WP and WS']:
             self.form_qubo = RandSliceLQUBOPenalty(objective_function=self.objective_function,
                                                    switch_network=self.network,
                                                    n_qubo=self.n_qubo,
                                                    max_hd=self.max_hd)
-        elif lqubo_type == 'HD Slice LQUBO' or 'HD Slice LQUBO WS':
+        elif lqubo_type in ['HD Slice LQUBO', 'HD Slice LQUBO WS']:
             self.form_qubo = HDSliceLQUBO(objective_function=self.objective_function,
                                           switch_network=self.network,
                                           n_qubo=self.n_qubo,
                                           # num_slice_vectors=num_slice_vectors,
                                           slice_hd=2)
-        elif lqubo_type == 'HD Slice LQUBO WP' or 'HD Slice LQUBO WP and WS':
+        elif lqubo_type in ['HD Slice LQUBO WP', 'HD Slice LQUBO WP and WS']:
             self.form_qubo = HDSliceLQUBOPenalty(objective_function=self.objective_function,
                                                  switch_network=self.network,
                                                  n_qubo=self.n_qubo,
