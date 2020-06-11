@@ -11,7 +11,7 @@ import time
 
 class MaxHDSolver:
     """
-    MaxHDSolver class can be run from the command line and given the full suite of qap, tsp, had, and nug instances will
+    MaxHDSolver class can be run from the command line and given the full suite of experiment_data, tsp, had, and nug instances will
     display an a array of 'good' max hd values to use for LQUBOs with a penalty.  This is based on the R squared value
     of the hamming distance plots.
     """
@@ -26,14 +26,15 @@ class MaxHDSolver:
         self.num_slice_vectors = num_slice_vectors
 
         had_qap = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
-        had_tsp = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
         nug_qap = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
-        nug_tsp = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
 
-        had = {'qap': had_qap, 'tsp': had_tsp, 'instances': ['4', '6', '8', '10', '12', '14', '16', '18', '20']}
-        nug = {'qap': nug_qap, 'tsp': nug_tsp, 'instances': ['12', '14', '15', '16a', '16b', '17', '18', '20']}
+        tsp_data = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
 
-        self.max_hd_dict = {'had': had, 'nug': nug, 'total time to compute max hd code': []}
+        had = {'experiment_data': had_qap, 'instances': ['4', '6', '8', '10', '12', '14', '16', '18', '20']}
+        nug = {'experiment_data': nug_qap, 'instances': ['12', '14', '15', '16a', '16b', '17', '18', '20']}
+        tsp = {'tsp': tsp_data, 'instances': list(range(4, 21))}
+
+        self.max_hd_dict = {'had': had, 'nug': nug, 'tsp': tsp, 'total time to compute max hd code': []}
         self.lqubo_type = lqubo_type
 
         """
@@ -43,10 +44,13 @@ class MaxHDSolver:
         for instance in ['had', 'nug']:
             for size in self.max_hd_dict[instance]['instances']:
                 qap_of = QAPObjectiveFunction(dat_file=instance+size+'.dat', sln_file=instance+size+'.sln')
-                tsp_of = TSPObjectiveFunction(dat_file=instance + size + '.dat', sln_file=instance + size + '.sln')
 
-                self.max_hd_dict[instance]['qap']['objective function'].append(qap_of)
-                self.max_hd_dict[instance]['tsp']['objective function'].append(tsp_of)
+                self.max_hd_dict[instance]['experiment_data']['objective function'].append(qap_of)
+
+        for size in self.max_hd_dict['tsp']['instances']:
+            tsp_of = TSPObjectiveFunction(num_points=size)
+
+            self.max_hd_dict['tsp']['tsp']['objective function'].append(tsp_of)
 
     def find_max_hd(self):
 
@@ -60,8 +64,8 @@ class MaxHDSolver:
             return binary
 
         start_code = time.time()
-        for instance in ['had', 'nug']:
-            for problem in ['qap', 'tsp']:
+        for instance in ['tsp']:
+            for problem in ['tsp']:
                 for problem_index in range(len(self.max_hd_dict[instance]['instances'])):
                     start_time = time.time()
                     max_hd_list = []
@@ -163,4 +167,5 @@ class MaxHDSolver:
 
         end_code = time.time()
         self.max_hd_dict['total time to compute max hd code'].append(end_code - start_code)
-        return self.max_hd_dict['had']['qap']['max hd vals'], self.max_hd_dict['had']['tsp']['max hd vals'], self.max_hd_dict['nug']['qap']['max hd vals'], self.max_hd_dict['nug']['tsp']['max hd vals'],
+        return self.max_hd_dict['tsp']['tsp']
+        #self.max_hd_dict['had']['experiment_data']['max hd vals'], self.max_hd_dict['had']['tsp']['max hd vals'], self.max_hd_dict['nug']['experiment_data']['max hd vals'], self.max_hd_dict['nug']['tsp']['max hd vals'],

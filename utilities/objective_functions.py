@@ -101,6 +101,7 @@ class TSPObjectiveFunction(ObjectiveFunction):
             raise AttributeError('Need to specify number of points between 4 and 20 (int)')
 
         self.n, self.dist, self.min_v = parse_tsp_csv(num_points=num_points)
+        self.dat_file = 'tsp_{}'.format(self.n)
 
         self.min_x = 'Refer to tsp_{}.raw file'.format(num_points)
 

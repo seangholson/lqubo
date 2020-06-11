@@ -69,11 +69,11 @@ for instance in data:
             for solver in data[instance][metric][stat]:
                 for size in domain[instance]:
                     if stat == 'avg':
-                        data[instance][metric][stat][solver].append(pd.read_csv("./qap/" + instance + "/iter_lim/" +
+                        data[instance][metric][stat][solver].append(pd.read_csv("./experiment_data/" + instance + "/iter_lim/" +
                                                                                 solver + "_" + size + ".csv")[
                                                                         metric][0])
                     else:
-                        data[instance][metric][stat][solver].append(pd.read_csv("./qap/" + instance + "/iter_lim/" +
+                        data[instance][metric][stat][solver].append(pd.read_csv("./experiment_data/" + instance + "/iter_lim/" +
                                                                                 solver + "_" + size + ".csv")[
                                                                         metric][1])
 

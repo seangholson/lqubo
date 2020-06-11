@@ -101,14 +101,14 @@ class LocalQUBOIterativeSolver(Solver):
         # Initialize switch network:
         # The default behavior here is to choose the smaller of either permutation or
         # sorting networks for the given input size.
-        self.n_qap = self.objective_function.n
+        self.n_obj = self.objective_function.n
         if network_type == 'sorting':
-            self.network = SortingNetwork(self.n_qap)
+            self.network = SortingNetwork(self.n_obj)
         elif network_type == 'permutation':
-            self.network = PermutationNetwork(self.n_qap)
+            self.network = PermutationNetwork(self.n_obj)
         elif network_type == 'minimum':
-            s = SortingNetwork(self.n_qap)
-            p = PermutationNetwork(self.n_qap)
+            s = SortingNetwork(self.n_obj)
+            p = PermutationNetwork(self.n_obj)
             if s.depth <= p.depth:
                 self.network = s
             else:

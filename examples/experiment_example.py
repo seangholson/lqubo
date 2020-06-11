@@ -1,26 +1,30 @@
 # Project locals:
 from experiment_code.experiment_class import Experiment
 from experiment_code.statistics_class import ExperimentStatistics
-from utilities.objective_functions import QAPObjectiveFunction
+from utilities.objective_functions import QAPObjectiveFunction, TSPObjectiveFunction
 
 
 # The objective function to test:
-obj_f = QAPObjectiveFunction(dat_file='had8.dat',
-                             sln_file='had8.sln')
+qap_obj = QAPObjectiveFunction(dat_file='had8.dat',
+                               sln_file='had8.sln')
+tsp_obj = TSPObjectiveFunction(num_points=15)
 
 experiment_config = {
     'save_csv': True,
+    'instance': 'tsp',
     'experiment_type': 'iter_lim',
     'num_trials': 2,
-    'solver': 'HD Slice LQUBO',
+    'solver': 'LQUBO',
+    'size': '20',
+    'problem_type': 'tsp',
     'max_hd': 11,
     'sampler_type': 'Tabu',
-    'objective_function': obj_f,
+    'objective_function': tsp_obj,
     'num_reads': 10,
     'num_iters': 30  # Should be a multiple of 5
 }
 
-test_experiment = Experiment(**experiment_config, size='10', instance='had')
+test_experiment = Experiment(**experiment_config)
 experiment_data = test_experiment.run_experiment()
 experiment_stats = ExperimentStatistics(experiment_data)
 experiment_stats_result = experiment_stats.run_stats()
