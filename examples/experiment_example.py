@@ -7,7 +7,7 @@ from utilities.objective_functions import QAPObjectiveFunction, TSPObjectiveFunc
 # The objective function to test:
 qap_obj = QAPObjectiveFunction(dat_file='had8.dat',
                                sln_file='had8.sln')
-tsp_obj = TSPObjectiveFunction(num_points=15)
+tsp_obj = TSPObjectiveFunction(num_points=8)
 
 experiment_config = {
     'save_csv': True,

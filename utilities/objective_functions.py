@@ -1,5 +1,6 @@
 import numpy as np
 from utilities.data_loading import parse_dat_file, parse_sln_file, parse_tsp_csv
+import time
 
 
 class ObjectiveFunction:
@@ -109,4 +110,6 @@ class TSPObjectiveFunction(ObjectiveFunction):
         perm = list(perm)
         last_stop = perm[0]
         perm.append(last_stop)
-        return sum(self.dist[perm[i]][perm[i + 1]] for i in range(self.n))
+        dist_traveled = [self.dist[perm[i]][perm[i + 1]] for i in range(self.n)]
+        ans = np.sum(dist_traveled)
+        return ans
