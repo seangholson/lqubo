@@ -31,15 +31,15 @@ experiment_types = [
 
 # These are the valid D-Wave sampler types:
 sampler_types = [
-    'SA', 
-    'QPU', 
+    'SA',
+    'QPU',
     'Tabu',
 ]
 
 
 class Experiment:
     """
-    This class is designed to run multiple trials of a solver for a 
+    This class is designed to run multiple trials of a solver for a
     specified QAP/ TSP and collect data.
     """
     def __init__(self,
@@ -50,6 +50,8 @@ class Experiment:
                  problem_type=None,
                  objective_function=None,
                  num_trials=None,
+                 num_reads=None,
+                 num_iters=None,
                  solver=None,
                  sampler_type=None,
                  experiment_type=None):
@@ -57,6 +59,7 @@ class Experiment:
         # Initialize objective function
         if objective_function:
             self.objective_function = objective_function
+            self.answer = objective_function.min_v
         else:
             raise AttributeError('Objective function missing.')
 
@@ -98,22 +101,26 @@ class Experiment:
                                                lqubo_type=self.solver_str,
                                                selection_type=selection_type,
                                                max_hd=max_hd,
-                                               experiment_type=experiment_type)
+                                               experiment_type=experiment_type,
+                                               num_reads=num_reads,
+                                               num_iters=num_iters)
 
     def run_experiment(self):
         results = dict()
-        main_key = 'solver_size_experiment_type_problem_type_instance'
-        results[main_key] = [self.solver_str, 
+        main_key = 'solver, size, experiment type, problem type, instance, answer'
+        results[main_key] = [self.solver_str,
                              self.size,
-                             self.experiment_str, 
+                             self.experiment_str,
                              self.problem_type,
-                             self.instance, 
-                             self.save_csv]
+                             self.instance,
+                             self.save_csv,
+                             self.answer]
         results['approx_ans'] = []
         results['percent_error'] = []
         results['obtain_optimal'] = []
         results['timing_code'] = []
         results['number_of_iterations'] = []
+        results['v_vec'] = []
 
         for trial in range(self.num_trials):
             t = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -131,6 +138,7 @@ class Experiment:
             results['timing_code'].append(solver_ans[3])
             results['number_of_iterations'].append(solver_ans[4])
             results['trial_{}_data_dict'.format(trial + 1)] = solver_ans[5]
+            results['v_vec'].append(solver_ans[6])
 
         t = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         f = self.objective_function.dat_file

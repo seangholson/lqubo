@@ -49,6 +49,7 @@ setup(
     install_requires=[
         'dwave-ocean-sdk', 
         'numpy',
-        'pandas',
+	'pandas',
+	'matplotlib'
     ],
 )

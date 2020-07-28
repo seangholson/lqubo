@@ -93,6 +93,8 @@ class LocalQUBOIterativeSolver(Solver):
                  max_hd=None,
                  selection_type='check and select',
                  experiment_type=None,
+                 num_reads=None,
+                 num_iters=None,
                  network_type='minimum'):
         super().__init__(objective_function=objective_function)
 
@@ -128,14 +130,24 @@ class LocalQUBOIterativeSolver(Solver):
                 self.sampler_kwargs = dict()
         elif dwave_sampler == 'SA':
             self.dwave_solver = SimulatedAnnealingSampler()
-            self.sampler_kwargs = {
-                'num_reads': 25
-            }
+            if num_reads:
+                self.sampler_kwargs = {
+                    'num_reads': num_reads
+                }
+            else:
+                self.sampler_kwargs = {
+                    'num_reads': 25
+                }
         elif dwave_sampler == 'Tabu':
             self.dwave_solver = TabuSampler()
-            self.sampler_kwargs = {
-                'num_reads': 500
-            }
+            if num_reads:
+                self.sampler_kwargs = {
+                    'num_reads': num_reads
+                }
+            else:
+                self.sampler_kwargs = {
+                    'num_reads': 250
+                }
 
         self.stopwatch = 0
 
@@ -145,38 +157,42 @@ class LocalQUBOIterativeSolver(Solver):
         if experiment_type == 'time_lim':
             self.n_iters = 1000
             self.time_limit = 30
-        elif experiment_type == 'iter_lim':
-            self.n_iters = 30
+
+        if experiment_type == 'iter_lim' and num_iters:
+            self.n_iters = num_iters
+            self.time_limit = False
+        else:
+            self.n_iters = 50
             self.time_limit = False
 
         if max_hd:
             self.max_hd = max_hd
 
-        if lqubo_type == 'LQUBO':
+        if lqubo_type in ['LQUBO', 'LQUBO WS']:
             self.form_qubo = LQUBO(objective_function=self.objective_function,
                                    switch_network=self.network,
                                    n_qubo=self.n_qubo)
-        elif lqubo_type == 'LQUBO WP':
+        elif lqubo_type in ['LQUBO WP', 'LQUBO WP and WS']:
             self.form_qubo = LQUBOWithPenalty(objective_function=self.objective_function,
                                               switch_network=self.network,
                                               n_qubo=self.n_qubo,
                                               max_hd=self.max_hd)
-        elif lqubo_type == 'Rand Slice LQUBO':
+        elif lqubo_type in ['Rand Slice LQUBO', 'Rand Slice LQUBO WS']:
             self.form_qubo = RandSliceLQUBO(objective_function=self.objective_function,
                                             switch_network=self.network,
                                             n_qubo=self.n_qubo)
-        elif lqubo_type == 'Rand Slice LQUBO WP':
+        elif lqubo_type in ['Rand Slice LQUBO WP', 'Rand Slice LQUBO WP and WS']:
             self.form_qubo = RandSliceLQUBOPenalty(objective_function=self.objective_function,
                                                    switch_network=self.network,
                                                    n_qubo=self.n_qubo,
                                                    max_hd=self.max_hd)
-        elif lqubo_type == 'HD Slice LQUBO':
+        elif lqubo_type in ['HD Slice LQUBO', 'HD Slice LQUBO WS']:
             self.form_qubo = HDSliceLQUBO(objective_function=self.objective_function,
                                           switch_network=self.network,
                                           n_qubo=self.n_qubo,
                                           # num_slice_vectors=num_slice_vectors,
                                           slice_hd=2)
-        elif lqubo_type == 'HD Slice LQUBO WP':
+        elif lqubo_type in ['HD Slice LQUBO WP', 'HD Slice LQUBO WP and WS']:
             self.form_qubo = HDSliceLQUBOPenalty(objective_function=self.objective_function,
                                                  switch_network=self.network,
                                                  n_qubo=self.n_qubo,
@@ -281,7 +297,7 @@ class LocalQUBOIterativeSolver(Solver):
             percent_error = abs(self.solution - lqubo_ans) / self.solution * 100
             obtain_optimal = 0
 
-        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, data_dict
+        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, data_dict, data_dict['v_vec']
 
 
 class NaturalEncodingSolver(Solver):
