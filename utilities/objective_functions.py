@@ -1,5 +1,6 @@
 import numpy as np
-from utilities.data_loading import parse_dat_file, parse_sln_file
+from utilities.data_loading import parse_dat_file, parse_sln_file, parse_tsp_csv
+import time
 
 
 class ObjectiveFunction:
@@ -95,27 +96,20 @@ class TSPObjectiveFunction(ObjectiveFunction):
     given permutation.
     """
     def __init__(self,
-                 dat_file=None,
-                 dist=None,
-                 flow=None,
-                 sln_file=None):
+                 num_points=None):
         super().__init__()
-        if dat_file:
-            self.n, self.dist, self.flow = parse_dat_file(dat_file=dat_file)
-            self.dat_file = dat_file
-        elif dist and flow:
-            self.n = dist.shape[0]
-            self.dist = dist
-            self.flow = flow
-        else:
-            raise AttributeError('Distance/flow matrices missing.')
+        if num_points not in list(range(4, 21)):
+            raise AttributeError('Need to specify number of points between 4 and 20 (int)')
 
-        self.min_x = None
-        if sln_file:
-            _, self.min_v, self.min_x = parse_sln_file(sln_file=sln_file)
+        self.n, self.dist, self.min_v = parse_tsp_csv(num_points=num_points)
+        self.dat_file = 'tsp_{}'.format(self.n)
+
+        self.min_x = 'Refer to tsp_{}.raw file'.format(num_points)
 
     def __call__(self, perm):
         perm = list(perm)
         last_stop = perm[0]
         perm.append(last_stop)
-        return sum(self.dist[perm[i]][perm[i + 1]] for i in range(self.n))
+        dist_traveled = [self.dist[perm[i]][perm[i + 1]] for i in range(self.n)]
+        ans = np.sum(dist_traveled)
+        return ans

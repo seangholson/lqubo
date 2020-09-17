@@ -1,11 +1,13 @@
 import os
 import numpy as np
+import pandas as pd
 
 
-# Working directory should always be /qap-qc/
+# Working directory should always be /lqubo/
 
 dat_path = 'data/dat'
 sln_path = 'data/sln'
+tsp_path = 'data/tsp_data/'
 
 
 def parse_dat_file(dat_file):
@@ -39,3 +41,16 @@ def read_square_matrix(matrix_file, matrix_size):
             matrix_row = [int(element) for element in line.split(' ') if element not in ['', '\n']]
             matrix.append(matrix_row)
     return np.array(matrix)
+
+
+def parse_tsp_csv(num_points):
+    solution = pd.read_csv(tsp_path + 'tsp_solution_' + str(num_points) + '.csv')['solution'][0]
+    solution = float(solution.replace('[', '').replace(']', ''))
+    imported_distance_matrix = pd.read_csv(tsp_path + 'tsp_distance_' + str(num_points) + '.csv')
+    distance = np.zeros((num_points, num_points))
+    for i in range(num_points):
+        for j in range(num_points):
+            distance[i][j] = imported_distance_matrix[str(i)][j]
+
+    return num_points, distance, solution
+

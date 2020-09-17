@@ -39,7 +39,7 @@ class ExperimentStatistics:
 
         if self.save_csv:
             stats_df = pd.DataFrame(data=stats)
-            stats_df.to_csv(('./results/' + 'qap/' + self.instance + '/' + self.experiment_type + '/' +
+            stats_df.to_csv(('./results/' + 'experiment_data/' + self.instance + '/' + self.experiment_type + '/' +
                             self.solver + '_' + self.size + '.csv').replace(' ', '_'))
 
         if self.save_csv and int(self.size) == 20:
