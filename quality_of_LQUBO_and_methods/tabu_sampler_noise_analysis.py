@@ -2,12 +2,10 @@ import numpy as np
 from switch_networks.switch_networks import SortingNetwork, PermutationNetwork
 from form_LQUBO.form_LQUBO import LQUBO
 from utilities.objective_functions import QAPObjectiveFunction
-from dimod import SimulatedAnnealingSampler
 from tabu import TabuSampler
-from dwave.system.samplers import DWaveSampler
-from dwave.system.composites import EmbeddingComposite
 import statistics as stat
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def remove_redundant_binaries(binary_list, delta_switch):
@@ -17,13 +15,12 @@ def remove_redundant_binaries(binary_list, delta_switch):
 class NumUniqueReadsHad:
 
     def __init__(self,
-                 sampler=None,
                  num_reads=None,
                  num_trials=None):
 
-        domain = ['4', '6', '8', '10', '12', '14', '16', '18', '20']
+        self.domain = ['4', '6', '8', '10', '12', '14', '16', '18', '20']
         objective_functions = []
-        for size in domain:
+        for size in self.domain:
             objective_functions.append(QAPObjectiveFunction(dat_file='had'+size+'.dat'))
         if num_reads:
             self.num_reads = num_reads
@@ -39,16 +36,9 @@ class NumUniqueReadsHad:
         else:
             num_trials = 100
 
-        if sampler == 'QPU':
-            dwave_solver = EmbeddingComposite(DWaveSampler())
-        elif sampler == 'SA':
-            dwave_solver = SimulatedAnnealingSampler()
-        elif sampler == 'Tabu':
-            dwave_solver = TabuSampler()
-        else:
-            raise TypeError("Invalid Sampler Type")
+        dwave_solver = TabuSampler()
 
-        self.data = {'average': [], 'standard deviation': [], 'domain': domain, 'domain with QUBO size': []}
+        self.data = {'average': [], 'standard deviation': [], 'domain': self.domain, 'domain with QUBO size': []}
         for objective_function in objective_functions:
             n_qap = objective_function.n
             s = SortingNetwork(n_qap)
@@ -85,18 +75,31 @@ class NumUniqueReadsHad:
 
     def plot_data(self):
 
-        plt.errorbar(x=self.data['domain with QUBO size'], y=self.data['average'], yerr=self.data['standard deviation'])
+        domain = ['4', '6', '8', '10', '12', '14', '16']
+        qpu_data = {'average': [], 'standard_deviation': [], 'domain with QUBO size': []}
+        for instance in range(len(domain)):
+            qpu_data['average'].append(pd.read_csv('./results/noise_analysis/QPUhad' + domain[instance] + '.csv')[
+                                           'average'][0])
+            qpu_data['standard_deviation'].append(pd.read_csv('./results/noise_analysis/QPUhad' + domain[instance] +
+                                                              '.csv')['standard deviation'][0])
+            qpu_data['domain with QUBO size'].append(self.data['domain with QUBO size'][instance])
+
+        plt.errorbar(x=qpu_data['domain with QUBO size'], y=qpu_data['average'], yerr=qpu_data['standard_deviation'],
+                     label='QPU')
+        plt.scatter(x=qpu_data['domain with QUBO size'], y=qpu_data['average'])
+        plt.errorbar(x=self.data['domain with QUBO size'], y=self.data['average'], yerr=self.data['standard deviation'],
+                     label='Tabu')
         plt.scatter(x=self.data['domain with QUBO size'], y=self.data['average'])
         plt.xlabel("QAP Size (QUBO Size)")
         plt.ylabel("Number of Unique Reads (Out of {} Reads)".format(self.num_reads))
         plt.suptitle("'Noise' Analysis of D-Wave Tabu Sampler (had)")
+        plt.legend(loc='upper left')
         plt.show()
 
 
 class NumUniqueReadsNug:
 
     def __init__(self,
-                 sampler=None,
                  num_reads=None,
                  num_trials=None):
 
@@ -118,14 +121,7 @@ class NumUniqueReadsNug:
         else:
             num_trials = 100
 
-        if sampler == 'QPU':
-            dwave_solver = EmbeddingComposite(DWaveSampler())
-        elif sampler == 'SA':
-            dwave_solver = SimulatedAnnealingSampler()
-        elif sampler == 'Tabu':
-            dwave_solver = TabuSampler()
-        else:
-            raise TypeError("Invalid Sampler Type")
+        dwave_solver = TabuSampler()
 
         self.data = {'average': [], 'standard deviation': [], 'domain': domain, 'domain with QUBO size': []}
         for objective_function in objective_functions:
@@ -165,15 +161,29 @@ class NumUniqueReadsNug:
 
     def plot_data(self):
 
-        plt.errorbar(x=self.data['domain with QUBO size'], y=self.data['average'], yerr=self.data['standard deviation'])
+        domain = ['12', '14', '15', '16a', '16b']
+        qpu_data = {'average': [], 'standard_deviation': [], 'domain with QUBO size': []}
+        for instance in range(len(domain)):
+            qpu_data['average'].append(pd.read_csv('./results/noise_analysis/QPUnug' + domain[instance] + '.csv')[
+                                           'average'][0])
+            qpu_data['standard_deviation'].append(pd.read_csv('./results/noise_analysis/QPUnug' + domain[instance] +
+                                                              '.csv')['standard deviation'][0])
+            qpu_data['domain with QUBO size'].append(self.data['domain with QUBO size'][instance])
+
+        plt.errorbar(x=qpu_data['domain with QUBO size'], y=qpu_data['average'], yerr=qpu_data['standard_deviation'],
+                     label='QPU')
+        plt.scatter(x=qpu_data['domain with QUBO size'], y=qpu_data['average'])
+        plt.errorbar(x=self.data['domain with QUBO size'], y=self.data['average'], yerr=self.data['standard deviation'],
+                     label='Tabu')
         plt.scatter(x=self.data['domain with QUBO size'], y=self.data['average'])
         plt.xlabel("QAP Size (QUBO Size)")
         plt.ylabel("Number of Unique Reads (Out of {} Reads)".format(self.num_reads))
         plt.suptitle("'Noise' Analysis of D-Wave Tabu Sampler (nug)")
+        plt.legend(loc='upper left')
         plt.show()
 
 
-had = NumUniqueReadsHad(sampler='Tabu', num_trials=100, num_reads=250)
-nug = NumUniqueReadsNug(sampler='Tabu', num_trials=100, num_reads=250)
+had = NumUniqueReadsHad(num_trials=100, num_reads=100)
+nug = NumUniqueReadsNug(num_trials=100, num_reads=100)
 had.plot_data()
 nug.plot_data()
