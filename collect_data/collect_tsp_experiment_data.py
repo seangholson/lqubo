@@ -54,7 +54,6 @@ experiment = Experiment(
     experiment_type='iter_lim',
     sampler_type='Tabu',
     num_trials=num_trials,
-    size=str(obj_array[obj_index]),
     instance='tsp',
     problem_type='tsp',
     num_iters=num_iters,

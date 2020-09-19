@@ -78,7 +78,6 @@ experiment = Experiment(
     experiment_type='iter_lim',
     sampler_type='Tabu',
     num_trials=num_trials,
-    size=size,
     instance=instance,
     problem_type='QAP',
     num_iters=num_iters,
