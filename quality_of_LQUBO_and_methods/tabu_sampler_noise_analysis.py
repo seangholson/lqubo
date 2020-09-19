@@ -53,7 +53,7 @@ class NumUniqueReadsHad:
                 binary_vals = []
 
                 q = np.random.randint(0, 2, size=network.depth)
-                qubo = LQUBO(objective_function=objective_function, switch_network=network, n_qubo=network.depth)
+                qubo = LQUBO(objective_function=objective_function, switch_network=network, num_activation_vectors=network.depth)
                 formed_qubo = qubo.form_lqubo(q=q)[0]
 
                 response = dwave_solver.sample_qubo(formed_qubo, **sampler_kwargs)
@@ -139,7 +139,7 @@ class NumUniqueReadsNug:
                 binary_vals = []
 
                 q = np.random.randint(0, 2, size=network.depth)
-                qubo = LQUBO(objective_function=objective_function, switch_network=network, n_qubo=network.depth)
+                qubo = LQUBO(objective_function=objective_function, switch_network=network, num_activation_vectors=network.depth)
                 formed_qubo = qubo.form_lqubo(q=q)[0]
 
                 response = dwave_solver.sample_qubo(formed_qubo, **sampler_kwargs)
