@@ -1,6 +1,6 @@
 import numpy as np
 from switch_networks.switch_networks import SortingNetwork, PermutationNetwork
-from form_LQUBO.form_LQUBO1 import LQUBO
+from form_LQUBO.form_LQUBO import LQUBO
 from dimod import SimulatedAnnealingSampler
 from tabu import TabuSampler
 from dwave.system.samplers import DWaveSampler

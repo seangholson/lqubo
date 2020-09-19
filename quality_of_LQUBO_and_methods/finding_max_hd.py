@@ -3,8 +3,6 @@ import statistics as stat
 from utilities.objective_functions import TSPObjectiveFunction, QAPObjectiveFunction
 from switch_networks.switch_networks import SortingNetwork, PermutationNetwork
 from form_LQUBO.form_LQUBO import LQUBO
-from form_LQUBO.form_LQUBO_rand_slice import RandSliceLQUBO
-from form_LQUBO.form_LQUBO_hd_slice import HDSliceLQUBO
 from scipy import stats
 import time
 
@@ -16,14 +14,13 @@ class MaxHDSolver:
     of the hamming distance plots.
     """
     def __init__(self,
-                 hd_slice=None,
+                 activation_vec_hamming_dist=1,
                  num_points=200,
-                 num_slice_vectors=None,
-                 lqubo_type=None,):
+                 num_activation_vectors=None):
 
         self.num_points = num_points
-        self.hd_slice = hd_slice
-        self.num_slice_vectors = num_slice_vectors
+        self.activation_vec_hd = activation_vec_hamming_dist
+        self.num_activation_vec = num_activation_vectors
 
         had_qap = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
         nug_qap = {'objective function': [], 'max hd vals': [], 'time to compute max hd': []}
@@ -32,10 +29,9 @@ class MaxHDSolver:
 
         had = {'experiment_data': had_qap, 'instances': ['4', '6', '8', '10', '12', '14', '16', '18', '20']}
         nug = {'experiment_data': nug_qap, 'instances': ['12', '14', '15', '16a', '16b', '17', '18', '20']}
-        tsp = {'tsp': tsp_data, 'instances': list(range(4, 21))}
+        tsp = {'experiment_data': tsp_data, 'instances': list(range(4, 21))}
 
         self.max_hd_dict = {'had': had, 'nug': nug, 'tsp': tsp, 'total time to compute max hd code': []}
-        self.lqubo_type = lqubo_type
 
         """
         Generates and organizes all objective functions to be used later
@@ -50,7 +46,7 @@ class MaxHDSolver:
         for size in self.max_hd_dict['tsp']['instances']:
             tsp_of = TSPObjectiveFunction(num_points=size)
 
-            self.max_hd_dict['tsp']['tsp']['objective function'].append(tsp_of)
+            self.max_hd_dict['tsp']['experiment_data']['objective function'].append(tsp_of)
 
     def find_max_hd(self):
 
@@ -64,101 +60,90 @@ class MaxHDSolver:
             return binary
 
         start_code = time.time()
-        for instance in ['tsp']:
-            for problem in ['tsp']:
-                for problem_index in range(len(self.max_hd_dict[instance]['instances'])):
-                    start_time = time.time()
-                    max_hd_list = []
-                    for iteration in range(100):
+        for instance in ['tsp', 'had', 'nug']:
+            for problem_index in range(len(self.max_hd_dict[instance]['instances'])):
+                start_time = time.time()
+                max_hd_list = []
+                for iteration in range(100):
 
-                        """
-                        For each iteration, this function we will generate a random switch setting and build a LQUBO
-                        around it.  Given that LQUBO it will generate the R squared of the LQUBO scatter plot and will 
-                        increase in hamming dist if the R squared is above the 0.05 cutoff.  When a specified hamming 
-                        dist is below the 0.05 cutoff it will be recorded.  When the 100 iterations are over, the val in
-                        the max hd array is the average of each cutoff hamming distance.
-                        """
+                    """
+                    For each iteration, this function we will generate a random switch setting and build a LQUBO
+                    around it.  Given that LQUBO it will generate the R squared of the LQUBO scatter plot and will 
+                    increase in hamming dist if the R squared is above the 0.05 cutoff.  When a specified hamming 
+                    dist is below the 0.05 cutoff it will be recorded.  When the 100 iterations are over, the val in
+                    the max hd array is the average of each cutoff hamming distance.
+                    """
 
-                        objective_function = self.max_hd_dict[instance][problem]['objective function'][problem_index]
+                    objective_function = self.max_hd_dict[instance]['experiment_data']['objective function'][problem_index]
 
-                        s = SortingNetwork(objective_function.n)
-                        p = PermutationNetwork(objective_function.n)
-                        if s.depth <= p.depth:
-                            network = s
-                        else:
-                            network = p
+                    s = SortingNetwork(objective_function.n)
+                    p = PermutationNetwork(objective_function.n)
+                    if s.depth <= p.depth:
+                        network = s
+                    else:
+                        network = p
 
+                    n_qubo = network.depth
+
+                    # Initialize random bitstring
+                    q = np.random.randint(0, 2, size=n_qubo)
+                    perm = network.permute(q)
+                    v = objective_function(perm)
+                    if self.num_activation_vec:
+                        n_qubo = self.num_activation_vec
+                    else:
                         n_qubo = network.depth
 
-                        # Initialize random bitstring
-                        q = np.random.randint(0, 2, size=n_qubo)
-                        perm = network.permute(q)
-                        v = objective_function(perm)
+                    form_qubo = LQUBO(objective_function=objective_function,
+                                      switch_network=network,
+                                      num_activation_vectors=n_qubo,
+                                      activation_vec_hamming_dist=self.activation_vec_hd).form_lqubo(q=q)
 
-                        if self.lqubo_type == 'LQUBO':
-                            form_qubo = LQUBO(objective_function=objective_function,
-                                              switch_network=network,
-                                              n_qubo=n_qubo).form_lqubo(q=q)
+                    qubo = np.zeros((n_qubo, n_qubo))
 
-                        elif self.lqubo_type == 'Rand Slice LQUBO':
-                            form_qubo = RandSliceLQUBO(objective_function=objective_function,
-                                                       switch_network=network,
-                                                       n_qubo=n_qubo).form_lqubo(q=q)
+                    basis = form_qubo[1]
 
-                        elif self.lqubo_type == 'HD Slice LQUBO':
-                            form_qubo = HDSliceLQUBO(objective_function=objective_function,
-                                                     switch_network=network,
-                                                     n_qubo=n_qubo,
-                                                     slice_hd=self.hd_slice).form_lqubo(q=q)
+                    for i in range(n_qubo):
+                        for j in range(n_qubo):
+                            if i <= j:
+                                qubo[i][j] = form_qubo[0][(i, j)]
 
-                        else:
-                            raise TypeError('LQUBO not recognized')
+                    r_val = []
+                    hamming_weight = []
+                    for hamming_dist in range(n_qubo):
 
-                        qubo = np.zeros((n_qubo, n_qubo))
+                        hamming_dist = hamming_dist + 1
+                        hd = []
+                        x = []
+                        y = []
 
-                        basis = form_qubo[1]
+                        for i in range(self.num_points):
+                            hd.append(np.zeros(n_qubo))
 
-                        for i in range(n_qubo):
-                            for j in range(n_qubo):
-                                if i <= j:
-                                    qubo[i][j] = form_qubo[0][(i, j)]
+                        for i in range(len(hd)):
+                            for j in range(hamming_dist):
+                                hd[i][j] = 1
+                            random_binary(hd[i], n_qubo)
 
-                        r_val = []
-                        hamming_weight = []
-                        for hamming_dist in range(n_qubo):
+                        for vec in hd:
+                            q_new = np.mod(q + np.matmul(vec, basis), 2)
+                            p_new = network.permute(q_new)
+                            v_new = objective_function(p_new)
+                            x.append(v_new - v)
+                            y.append(np.matmul(np.matmul(vec, qubo), np.transpose(vec)))
 
-                            hamming_dist = hamming_dist + 1
-                            hd = []
-                            x = []
-                            y = []
+                        slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+                        r_val.append(r_value ** 2)
+                        hamming_weight.append(hamming_dist)
 
-                            for i in range(self.num_points):
-                                hd.append(np.zeros(n_qubo))
+                        if r_value**2 < 0.05:
+                            max_hd_list.append(hamming_weight[r_val.index(r_value**2)])
+                            break
 
-                            for i in range(len(hd)):
-                                for j in range(hamming_dist):
-                                    hd[i][j] = 1
-                                random_binary(hd[i], n_qubo)
-
-                            for vec in hd:
-                                q_new = np.mod(q + np.matmul(vec, basis), 2)
-                                p_new = network.permute(q_new)
-                                v_new = objective_function(p_new)
-                                x.append(v_new - v)
-                                y.append(np.matmul(np.matmul(vec, qubo), np.transpose(vec)))
-
-                            slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-                            r_val.append(r_value ** 2)
-                            hamming_weight.append(hamming_dist)
-
-                            if r_value**2 < 0.05:
-                                max_hd_list.append(hamming_weight[r_val.index(r_value**2)])
-                                break
-
-                    avg_max_hd = stat.mean(max_hd_list)
-                    end_time = time.time()
-                    self.max_hd_dict[instance][problem]['max hd vals'].append(avg_max_hd)
-                    self.max_hd_dict[instance][problem]['time to compute max hd'].append(end_time - start_time)
+                avg_max_hd = stat.mean(max_hd_list)
+                end_time = time.time()
+                self.max_hd_dict[instance]['experiment_data']['max hd vals'].append(avg_max_hd)
+                self.max_hd_dict[instance]['experiment_data']['time to compute max hd'].append(end_time - start_time)
 
         """
         In addition to computing the max hd val the max hd dict will record the total amount of time it took to generate
@@ -167,5 +152,4 @@ class MaxHDSolver:
 
         end_code = time.time()
         self.max_hd_dict['total time to compute max hd code'].append(end_code - start_code)
-        return self.max_hd_dict['tsp']['tsp']
-        #self.max_hd_dict['had']['experiment_data']['max hd vals'], self.max_hd_dict['had']['tsp']['max hd vals'], self.max_hd_dict['nug']['experiment_data']['max hd vals'], self.max_hd_dict['nug']['tsp']['max hd vals'],
+        return self.max_hd_dict
