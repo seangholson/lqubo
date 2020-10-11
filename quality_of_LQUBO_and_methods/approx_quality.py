@@ -1,12 +1,7 @@
 import numpy as np
-from utilities.objective_functions import TSPObjectiveFunction, QAPObjectiveFunction
+from utilities.objective_functions import TSPObjectiveFunction
 from switch_networks.switch_networks import SortingNetwork, PermutationNetwork
 from form_LQUBO.form_LQUBO import LQUBO
-from form_LQUBO.form_LQUBO_penalty import LQUBOWithPenalty
-from form_LQUBO.form_LQUBO_rand_slice import RandSliceLQUBO
-from form_LQUBO.form_LQUBO_hd_slice import HDSliceLQUBO
-from form_LQUBO.from_LQUBO_hd_slice_penalty import HDSliceLQUBOPenalty
-from form_LQUBO.form_LQUBO_rand_slice_penalty import RandSliceLQUBOPenalty
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from scipy import stats
@@ -21,18 +16,20 @@ class ObjectiveFunction:
             raise AttributeError('Objective function missing.')
 
 
-class LocalQUBOGoodness(ObjectiveFunction):
+class LocalQUBOQuality(ObjectiveFunction):
     """
-    For a specified objective function and LQUBO type, LocalQUBOGoodness class has 2 useful visual functions that can
+    For a specified objective function and LQUBO type, LocalQUBOQuality class has 2 useful visual functions that can
     be run from the command line.
+
+
+
     """
     def __init__(self,
                  objective_function=None,
                  max_hd=None,
-                 hd_slice=None,
+                 activation_vector_hamming_dist=1,
                  num_points=None,
-                 num_slice_vectors=None,
-                 lqubo_type=None,
+                 num_activation_vectors=None,
                  network_type='minimum'):
         super().__init__(objective_function=objective_function)
 
@@ -55,7 +52,10 @@ class LocalQUBOGoodness(ObjectiveFunction):
         else:
             raise TypeError('Network type {} not recognized'.format(str(network_type)))
 
-        self.n_qubo = self.network.depth
+        if num_activation_vectors:
+            self.n_qubo = num_activation_vectors
+        else:
+            self.n_qubo = self.network.depth
 
         if num_points:
             self.num_points = num_points
@@ -66,6 +66,7 @@ class LocalQUBOGoodness(ObjectiveFunction):
         self.q = np.random.randint(0, 2, size=self.n_qubo)
         self.p = self.network.permute(self.q)
         self.v = self.objective_function(self.p)
+        self.activation_vec_hd = activation_vector_hamming_dist
 
         if type(objective_function) == TSPObjectiveFunction:
             self.OF_type = 'TSP'
@@ -73,49 +74,12 @@ class LocalQUBOGoodness(ObjectiveFunction):
             self.OF_type = 'QAP'
 
         self.max_hd = max_hd
-        self.lqubo_type = lqubo_type
 
-        if lqubo_type == 'LQUBO':
-            self.form_qubo = LQUBO(objective_function=self.objective_function,
-                                   switch_network=self.network,
-                                   n_qubo=self.n_qubo).form_lqubo(q=self.q)
-            self.hd_slice = 1
-        elif lqubo_type == 'LQUBO WP':
-            self.form_qubo = LQUBOWithPenalty(objective_function=self.objective_function,
-                                              switch_network=self.network,
-                                              n_qubo=self.n_qubo,
-                                              max_hd=self.max_hd).form_lqubo(q=self.q)
-            self.hd_slice = 1
-        elif lqubo_type == 'Rand Slice LQUBO':
-            self.form_qubo = RandSliceLQUBO(objective_function=self.objective_function,
-                                            switch_network=self.network,
-                                            n_qubo=self.n_qubo).form_lqubo(q=self.q)
-            self.hd_slice = 'rand'
-        elif lqubo_type == 'Rand Slice LQUBO WP':
-            self.form_qubo = RandSliceLQUBOPenalty(objective_function=self.objective_function,
-                                                   switch_network=self.network,
-                                                   n_qubo=self.n_qubo,
-                                                   max_hd=self.max_hd).form_lqubo(q=self.q)
-            self.hd_slice = 'rand'
-        elif lqubo_type == 'HD Slice LQUBO':
-            self.form_qubo = HDSliceLQUBO(objective_function=self.objective_function,
-                                          switch_network=self.network,
-                                          n_qubo=self.n_qubo,
-                                          num_slice_vectors=num_slice_vectors,
-                                          slice_hd=hd_slice).form_lqubo(q=self.q)
-            self.hd_slice = hd_slice
-            if num_slice_vectors:
-                self.n_qubo = num_slice_vectors
-        elif lqubo_type == 'HD Slice LQUBO WP':
-            self.form_qubo = HDSliceLQUBOPenalty(objective_function=self.objective_function,
-                                                 switch_network=self.network,
-                                                 n_qubo=self.n_qubo,
-                                                 max_hd=self.max_hd,
-                                                 num_slice_vectors=num_slice_vectors,
-                                                 slice_hd=hd_slice).form_lqubo(q=self.q)
-            self.hd_slice = hd_slice
-            if num_slice_vectors:
-                self.n_qubo = num_slice_vectors
+        self.form_qubo = LQUBO(objective_function=self.objective_function,
+                               switch_network=self.network,
+                               num_activation_vectors=self.n_qubo,
+                               activation_vec_hamming_dist=self.activation_vec_hd,
+                               max_hamming_dist=self.max_hd).form_lqubo(self.q)
 
         self.qubo = np.zeros((self.n_qubo, self.n_qubo))
         self.basis_matrix = []
@@ -129,10 +93,10 @@ class LocalQUBOGoodness(ObjectiveFunction):
                 if i <= j:
                     self.qubo[i][j] = self.form_qubo[0][(i, j)]
 
-    def plot_goodness(self, hamming_dist):
+    def q_q_plot(self, hamming_dist):
 
         """
-        Given a specified hamming dist (int), plot_goodness will produce a scatter plot of the LQUBO change in objective
+        Given a specified hamming dist (int), q_q_plot will produce a Q-Q scatter plot of the LQUBO change in objective
         function versus the actual change in objective function.
         """
 
@@ -175,7 +139,7 @@ class LocalQUBOGoodness(ObjectiveFunction):
 
         plt.xlabel("true delta obj")
         plt.ylabel("local qubo delta obj")
-        plt.title('n = {} {}, Activation Vector HD = {} '.format(self.n_qap, self.OF_type, self.hd_slice))
+        plt.title('n = {} {}, Activation Vector HD = {} '.format(self.n_qap, self.OF_type, self.activation_vec_hd))
 
         plt.axhline(y=0, color='k')
         plt.axvline(x=0, color='k')
@@ -229,7 +193,7 @@ class LocalQUBOGoodness(ObjectiveFunction):
 
         plt.plot(hamming_weight, r_val, label='n = {} {}, activation vector HD = {}'.format(self.n_qap,
                                                                                             self.OF_type,
-                                                                                            self.hd_slice))
+                                                                                            self.activation_vec_hd))
 
         plt.scatter(hamming_weight, r_val)
         plt.xticks(hamming_weight)
@@ -240,42 +204,4 @@ class LocalQUBOGoodness(ObjectiveFunction):
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         plt.show()
 
-    def find_max_hd(self):
-
-        def swap(input_list, first_entry, second_entry):
-            input_list[first_entry], input_list[second_entry] = input_list[second_entry], input_list[first_entry]
-            return input_list
-
-        def random_binary(binary):
-            for index in range(hamming_dist):
-                swap(binary, index, np.random.randint(self.n_qubo))
-            return binary
-
-        r_val = []
-        hamming_weight = []
-        for hamming_dist in range(20):
-
-            hamming_dist = hamming_dist + 1
-            hd = []
-            x = []
-            y = []
-
-            for i in range(self.num_points):
-                hd.append(np.zeros(self.n_qubo))
-
-            for i in range(len(hd)):
-                for j in range(hamming_dist):
-                    hd[i][j] = 1
-                random_binary(hd[i])
-
-            for vec in hd:
-                q_new = np.mod(self.q + np.matmul(vec, self.basis_matrix), 2)
-                p_new = self.network.permute(q_new)
-                v_new = self.objective_function(p_new)
-                x.append(v_new - self.v)
-                y.append(np.matmul(np.matmul(vec, self.qubo), np.transpose(vec)))
-
-            slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-            r_val.append(r_value**2)
-            hamming_weight.append(hamming_dist)
 

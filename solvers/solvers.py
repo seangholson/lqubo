@@ -1,11 +1,6 @@
 import numpy as np
 from switch_networks.switch_networks import SortingNetwork, PermutationNetwork
 from form_LQUBO.form_LQUBO import LQUBO
-from form_LQUBO.form_LQUBO_penalty import LQUBOWithPenalty
-from form_LQUBO.form_LQUBO_rand_slice import RandSliceLQUBO
-from form_LQUBO.form_LQUBO_hd_slice import HDSliceLQUBO
-from form_LQUBO.from_LQUBO_hd_slice_penalty import HDSliceLQUBOPenalty
-from form_LQUBO.form_LQUBO_rand_slice_penalty import RandSliceLQUBOPenalty
 from dimod import SimulatedAnnealingSampler
 from tabu import TabuSampler
 from dwave.system.samplers import DWaveSampler
@@ -89,9 +84,10 @@ class LocalQUBOIterativeSolver(Solver):
                  objective_function=None,
                  dwave_sampler=None,
                  dwave_sampler_kwargs=None,
-                 lqubo_type=None,
+                 num_activation_vectors=None,
+                 activation_vec_hamming_dist=1,
                  max_hd=None,
-                 selection_type='check and select',
+                 parse_samples=True,
                  experiment_type=None,
                  num_reads=None,
                  num_iters=None,
@@ -167,44 +163,25 @@ class LocalQUBOIterativeSolver(Solver):
 
         if max_hd:
             self.max_hd = max_hd
+        else:
+            self.max_hd = 0
 
-        if lqubo_type in ['LQUBO', 'LQUBO WS']:
-            self.form_qubo = LQUBO(objective_function=self.objective_function,
-                                   switch_network=self.network,
-                                   n_qubo=self.n_qubo)
-        elif lqubo_type in ['LQUBO WP', 'LQUBO WP and WS']:
-            self.form_qubo = LQUBOWithPenalty(objective_function=self.objective_function,
-                                              switch_network=self.network,
-                                              n_qubo=self.n_qubo,
-                                              max_hd=self.max_hd)
-        elif lqubo_type in ['Rand Slice LQUBO', 'Rand Slice LQUBO WS']:
-            self.form_qubo = RandSliceLQUBO(objective_function=self.objective_function,
-                                            switch_network=self.network,
-                                            n_qubo=self.n_qubo)
-        elif lqubo_type in ['Rand Slice LQUBO WP', 'Rand Slice LQUBO WP and WS']:
-            self.form_qubo = RandSliceLQUBOPenalty(objective_function=self.objective_function,
-                                                   switch_network=self.network,
-                                                   n_qubo=self.n_qubo,
-                                                   max_hd=self.max_hd)
-        elif lqubo_type in ['HD Slice LQUBO', 'HD Slice LQUBO WS']:
-            self.form_qubo = HDSliceLQUBO(objective_function=self.objective_function,
-                                          switch_network=self.network,
-                                          n_qubo=self.n_qubo,
-                                          # num_slice_vectors=num_slice_vectors,
-                                          slice_hd=2)
-        elif lqubo_type in ['HD Slice LQUBO WP', 'HD Slice LQUBO WP and WS']:
-            self.form_qubo = HDSliceLQUBOPenalty(objective_function=self.objective_function,
-                                                 switch_network=self.network,
-                                                 n_qubo=self.n_qubo,
-                                                 max_hd=self.max_hd,
-                                                 # num_slice_vectors=num_slice_vectors,
-                                                 slice_hd=2)
+        if num_activation_vectors:
+            self.num_activation_vec = num_activation_vectors
+        else:
+            self.num_activation_vec = self.n_qubo
+
+        self.form_qubo = LQUBO(objective_function=self.objective_function,
+                               switch_network=self.network,
+                               max_hamming_dist=self.max_hd,
+                               num_activation_vectors=self.num_activation_vec,
+                               activation_vec_hamming_dist=activation_vec_hamming_dist)
 
         self.solution = self.objective_function.min_v
 
-        if selection_type == 'check and select':
+        if parse_samples:
             self.selection = CheckAndSelect
-        elif selection_type == 'select':
+        else:
             self.selection = Select
 
     def minimize_objective(self):

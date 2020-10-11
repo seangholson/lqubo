@@ -63,7 +63,7 @@ class QPUUniqueReads:
             binary_vals = []
 
             q = np.random.randint(0, 2, size=self.n_qubo)
-            qubo = LQUBO(objective_function=self.objective_function, switch_network=self.network, n_qubo=self.n_qubo)
+            qubo = LQUBO(objective_function=self.objective_function, switch_network=self.network, num_activation_vectors=self.n_qubo)
             formed_qubo = qubo.form_lqubo(q=q)[0]
 
             response = self.dwave_solver.sample_qubo(formed_qubo, **sampler_kwargs)

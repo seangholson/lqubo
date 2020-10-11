@@ -45,8 +45,9 @@ class Experiment:
     def __init__(self,
                  save_csv=None,
                  max_hd=None,
+                 num_activation_vectors=None,
+                 activation_vec_hamming_dist=1,
                  instance=None,
-                 size=None,
                  problem_type=None,
                  objective_function=None,
                  num_trials=None,
@@ -71,7 +72,7 @@ class Experiment:
 
         self.instance = instance
         self.problem_type = problem_type
-        self.size = size
+        self.size = str(objective_function.n)
         self.save_csv = save_csv
 
         # Initialize solver based on type of experiment and sampler and/ or penalty if necessary
@@ -92,16 +93,21 @@ class Experiment:
         self.sampler_str = sampler_type
 
         if 'WS' in self.solver_str:
-            selection_type = 'check and select'
+            parse_samples = True
         else:
-            selection_type = 'select'
+            parse_samples = False
+
+        if 'Slice' not in self.solver_str:
+            num_activation_vectors = None
+            activation_vec_hamming_dist = 1
 
         self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
                                                dwave_sampler=sampler_type,
-                                               lqubo_type=self.solver_str,
-                                               selection_type=selection_type,
+                                               parse_samples=parse_samples,
                                                max_hd=max_hd,
                                                experiment_type=experiment_type,
+                                               num_activation_vectors=num_activation_vectors,
+                                               activation_vec_hamming_dist=activation_vec_hamming_dist,
                                                num_reads=num_reads,
                                                num_iters=num_iters)
 
