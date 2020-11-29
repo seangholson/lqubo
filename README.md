@@ -53,20 +53,20 @@ lower objective function value. As the LQUBO algorithm repeats this process, it 
 optimal answer.
 
 This repository is an open testbed for the LQUBO algorithm on various instances of QAP and TSP problems.  As we
-to benchmark this method, we are continuing to learn from our mistakes to improve the performance and scaling of the 
-algorithm.  In each of the main directories of this repository contains an additional README.md that give context to
-the previous methods used, lessons learned, and current advancements to the LQUBO algorithm.  For a full chronological 
-context, the suggested ordering of reading by directory:
+benchmark this method, we are continuing to learn from our mistakes to improve the performance and scaling of the 
+algorithm.
 
-* `form_LQUBO/README.md`
-* `swtch_networks/README.md`
-* `quality_of_LQUBO_and_methods/README.md`
-* `response_selection/README.md`
-* `solvers/README.md`
-* `data/README.md`
-* `experiment_code/README.md`
-* `results/README.md`
-* `New_LQUBO/README.md`
+In this repository there are two main directories that explore the functionality of the LQUBO algorithm.  The first 
+directory labeled `switch_network_LQUBO` contains the codebase for the switch newtork encoding of the LQUBO algorithm.
+After many months of testing we have found that this particular encoding produces a high relative error due its 
+exponential increase of redundant switches.  The results of this encoding can be found in the 
+`switch_network_LQUBO/results` directory.
+
+Since finding these critical issues with the switch network encoding, we have been able to formulate an LQUBO encoding 
+using only permutations, removing the need for a switch network.  The code base for this encoding can be found in the 
+`perm_LQUBO` directory.  This new encoding has resulted in a multi-factor reduction in relative error and requires n-1
+qubits vs the O(n(log(n))) qubits from the switch network encoding.  This section of the codebase is still undergoing 
+changes as we are continuing to explore this new formulation.
 
 
 ## NOTE: The D-Wave Ocean SDK
