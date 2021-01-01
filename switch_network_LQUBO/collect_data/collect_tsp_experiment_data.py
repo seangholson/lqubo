@@ -1,5 +1,5 @@
-from experiment_code.switch_network_experiment_class import Experiment
-from experiment_code.statistics_class import ExperimentStatistics
+from switch_network_LQUBO.experiment_code.switch_network_experiment_class import Experiment
+from switch_network_LQUBO.experiment_code.statistics_class import ExperimentStatistics
 from utilities.objective_functions import TSPObjectiveFunction
 import argparse
 import numpy as np
