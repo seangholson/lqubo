@@ -1,9 +1,9 @@
-from perm_LQUBO.experiment_code.perm_experiment_class import Experiment
-from perm_LQUBO.experiment_code.statistics_class import ExperimentStatistics
+from perm_LQUBO.experiment_code.population_lqubo_experiment_class import Experiment
+from perm_LQUBO.experiment_code.population_statistics_class import ExperimentStatistics
 from utilities.objective_functions import QAPObjectiveFunction, TSPObjectiveFunction
 import argparse
 
-# sge id should go from 1-34
+# sge id should go from 1-136
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--sge_task_id",
@@ -12,10 +12,30 @@ parser.add_argument("--sge_task_id",
 args = parser.parse_args()
 sge_task_id = args.sge_task_id
 
-
 num_trials = 100
 num_iters = 100
-num_reads = 250
+
+if sge_task_id <= 34:
+    population_size = 1
+    num_reads = 250
+    obj_index = sge_task_id - 1
+elif 34 < sge_task_id <= 68:
+    population_size = 250
+    num_reads = 1
+    obj_index = sge_task_id - 35
+elif 68 < sge_task_id <= 102:
+    population_size = 125
+    num_reads = 2
+    obj_index = sge_task_id - 69
+elif 102 < sge_task_id <= 136:
+    population_size = 50
+    num_reads = 5
+    obj_index = sge_task_id - 103
+else:
+    obj_index = None
+    num_reads = None
+    population_size = None
+
 
 obj_array = [
     'had4',
@@ -56,7 +76,7 @@ obj_array = [
 
 
 #  Decode the sge_task_id into index for solver and obj fcn array
-obj_index = sge_task_id - 1
+
 
 if obj_index < 17:
     obj_fcn = QAPObjectiveFunction(dat_file=obj_array[obj_index] + '.dat',
@@ -69,6 +89,7 @@ if obj_index < 17:
 
     experiment = Experiment(
         save_csv=True,
+        population_size=population_size,
         objective_function=obj_fcn,
         experiment_type='iter_lim',
         sampler_type='Tabu',
@@ -86,6 +107,7 @@ else:
 
     experiment = Experiment(
         save_csv=True,
+        population_size=population_size,
         objective_function=obj_fcn,
         experiment_type='iter_lim',
         sampler_type='Tabu',

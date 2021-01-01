@@ -22,7 +22,7 @@ class Solver:
         raise NotImplementedError
 
 
-class LocalQUBOIterativeSolver(Solver):
+class PermLQUBOSolver(Solver):
     """
     The Local-QUBO Solver uses a switch/permutation network to encode the QAP permutation
     in a bitstring.
@@ -36,9 +36,6 @@ class LocalQUBOIterativeSolver(Solver):
                  num_iters=None):
         super().__init__(objective_function=objective_function)
 
-        # Initialize switch network:
-        # The default behavior here is to choose the smaller of either permutation or
-        # sorting networks for the given input size.
         self.n_obj = self.objective_function.n
 
         self.n_qubo = self.n_obj - 1
@@ -77,9 +74,6 @@ class LocalQUBOIterativeSolver(Solver):
 
         self.stopwatch = 0
 
-        # Initialize type of experiment
-        # When running a timed experiment there is a high number of iterations and a 30 sec wall clock
-        # When running a iteration experiment there is a iteration limit of 30 and no wall clock
         if experiment_type == 'time_lim':
             self.n_iters = 1000
             self.time_limit = 30
@@ -100,32 +94,25 @@ class LocalQUBOIterativeSolver(Solver):
     def minimize_objective(self):
         start_code = time.time()
 
+        # Initialize random permutation
+
         p = np.random.permutation(self.n_obj)
         v = self.objective_function(p)
-        delta_q = None
 
         data_dict = dict()
         data_dict['p_vec'] = [p]
         data_dict['v_vec'] = [v]
 
-        # Initialize bitstring
-
         begin_loop = time.time()
         self.stopwatch = begin_loop - start_code
         for iteration in range(self.n_iters):
 
-            # If there is a timing limit and the stopwatch is greater than the timing limit then break
             if self.time_limit and self.time_limit <= self.stopwatch:
                 break
             start_iteration = time.time()
 
-            # Build the Local QUBO by creating all delta_q's that are hamming distance 2
-            # from the current q.  For each of those, the new q gives a permutation (via
-            # the network encoding) and hence a new objective function value.  The deltas
-            # in the objective function values are what populate the qubo.
             qubo = self.form_qubo.form_lqubo(p=p)
 
-            # Solve the QUBO for delta_q
             if self.qpu:
                 self.sampler_kwargs.update({
                     'chain_strength': 1.5*abs(max(qubo.values(), key=abs)),

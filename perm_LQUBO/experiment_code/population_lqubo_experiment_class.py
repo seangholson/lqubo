@@ -4,7 +4,7 @@ from datetime import datetime
 # Installed packages:
 
 # Project locals:
-from perm_LQUBO.New_LQUBO_solver import LocalQUBOIterativeSolver
+from perm_LQUBO.solvers.Population_Based_LQUBO import PopulationLQUBOSolver
 
 # These are the valid experiment types:
 experiment_types = [
@@ -29,11 +29,12 @@ class Experiment:
                  save_csv=None,
                  instance=None,
                  problem_type=None,
+                 population_size=None,
                  objective_function=None,
                  num_trials=None,
                  num_reads=None,
                  num_iters=None,
-                 solver="New LQUBO",
+                 solver="Population_Based_LQUBO",
                  sampler_type=None,
                  experiment_type=None):
 
@@ -50,6 +51,8 @@ class Experiment:
         else:
             self.num_trials = 10
 
+        self.population_size = population_size
+        self.num_reads = num_reads
         self.instance = instance
         self.problem_type = problem_type
         self.size = str(objective_function.n)
@@ -64,15 +67,16 @@ class Experiment:
             err_msg = f'Sampler {sampler_type} must be one of {sampler_types}'
             raise ValueError(err_msg)
 
-        self.solver_str = solver
+        self.solver_str = solver + "_ps_" + str(self.population_size) + "_nr_" + str(num_reads)
         self.experiment_str = experiment_type
         self.sampler_str = sampler_type
 
-        self.solver = LocalQUBOIterativeSolver(objective_function=objective_function,
-                                               dwave_sampler=sampler_type,
-                                               experiment_type=experiment_type,
-                                               num_reads=num_reads,
-                                               num_iters=num_iters)
+        self.solver = PopulationLQUBOSolver(objective_function=objective_function,
+                                            population_size=self.population_size,
+                                            dwave_sampler=sampler_type,
+                                            experiment_type=experiment_type,
+                                            num_reads=self.num_reads,
+                                            num_iters=num_iters)
 
     def run_experiment(self):
         results = dict()
@@ -89,7 +93,7 @@ class Experiment:
         results['obtain_optimal'] = []
         results['timing_code'] = []
         results['number_of_iterations'] = []
-        results['v_vec'] = []
+        results['max_fitness'] = []
 
         for trial in range(self.num_trials):
             t = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -107,7 +111,7 @@ class Experiment:
             results['timing_code'].append(solver_ans[3])
             results['number_of_iterations'].append(solver_ans[4])
             results['trial_{}_data_dict'.format(trial + 1)] = solver_ans[5]
-            results['v_vec'].append(solver_ans[6])
+            results['max_fitness'].append(solver_ans[6])
 
         t = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         f = self.objective_function.dat_file
