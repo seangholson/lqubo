@@ -36,20 +36,16 @@ setup(
         'Say hi!': 'mailto:sgholson@groupw.com',
     },
     packages=[
-        'experiment_code',
-        'form_LQUBO',
-        'quality_of_LQUBO_and_methods',
-        'response_selection',
-        'solvers',
-        'switch_networks',
-        'tabu_experiment',
         'utilities',
+        'examples',
+        'perm_LQUBO',
+        'switch_network_LQUBO',
     ],
     python_requires='>=3.5, <4',
     install_requires=[
         'dwave-ocean-sdk', 
         'numpy',
-	'pandas',
-	'matplotlib'
-    ],
+	    'pandas',
+	    'matplotlib'
+        ],
 )
