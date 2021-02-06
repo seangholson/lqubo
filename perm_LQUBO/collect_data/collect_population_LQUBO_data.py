@@ -3,7 +3,7 @@ from perm_LQUBO.experiment_code.population_statistics_class import ExperimentSta
 from utilities.objective_functions import QAPObjectiveFunction, TSPObjectiveFunction
 import argparse
 
-# sge id should go from 1-136
+# sge id should go from 1-272
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--sge_task_id",
@@ -15,22 +15,39 @@ sge_task_id = args.sge_task_id
 num_trials = 100
 num_iters = 100
 
+
 if sge_task_id <= 34:
     population_size = 1
-    num_reads = 250
+    num_reads = 1000
     obj_index = sge_task_id - 1
 elif 34 < sge_task_id <= 68:
-    population_size = 250
+    population_size = 1000
     num_reads = 1
     obj_index = sge_task_id - 35
 elif 68 < sge_task_id <= 102:
-    population_size = 125
+    population_size = 500
     num_reads = 2
     obj_index = sge_task_id - 69
 elif 102 < sge_task_id <= 136:
-    population_size = 50
+    population_size = 200
     num_reads = 5
     obj_index = sge_task_id - 103
+elif 136 < sge_task_id <= 170:
+    population_size = 1
+    num_reads = 250
+    obj_index = sge_task_id - 137
+elif 170 < sge_task_id <= 204:
+    population_size = 250
+    num_reads = 1
+    obj_index = sge_task_id - 171
+elif 204 < sge_task_id <= 238:
+    population_size = 125
+    num_reads = 2
+    obj_index = sge_task_id - 205
+elif 238 < sge_task_id <= 272:
+    population_size = 50
+    num_reads = 5
+    obj_index = sge_task_id - 239
 else:
     obj_index = None
     num_reads = None
@@ -87,11 +104,14 @@ if obj_index < 17:
     else:
         instance = 'nug'
 
+    size = obj_array[obj_index].replace(instance, '')
+
     experiment = Experiment(
         save_csv=True,
         population_size=population_size,
         objective_function=obj_fcn,
         experiment_type='iter_lim',
+        size=size,
         sampler_type='Tabu',
         num_trials=num_trials,
         instance=instance,
@@ -105,11 +125,14 @@ else:
     obj_fcn = TSPObjectiveFunction(num_points=obj_array[obj_index])
     instance = 'tsp'
 
+    size = obj_array[obj_index].replace(instance, '')
+
     experiment = Experiment(
         save_csv=True,
         population_size=population_size,
         objective_function=obj_fcn,
         experiment_type='iter_lim',
+        size=size,
         sampler_type='Tabu',
         num_trials=num_trials,
         instance=instance,

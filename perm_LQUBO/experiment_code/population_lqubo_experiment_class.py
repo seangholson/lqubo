@@ -28,6 +28,7 @@ class Experiment:
     def __init__(self,
                  save_csv=None,
                  instance=None,
+                 size=None,
                  problem_type=None,
                  population_size=None,
                  objective_function=None,
@@ -55,7 +56,7 @@ class Experiment:
         self.num_reads = num_reads
         self.instance = instance
         self.problem_type = problem_type
-        self.size = str(objective_function.n)
+        self.size = size
         self.save_csv = save_csv
 
         # Initialize solver based on type of experiment and sampler and/ or penalty if necessary

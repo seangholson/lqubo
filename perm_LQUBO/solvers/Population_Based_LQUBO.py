@@ -1,7 +1,7 @@
 import numpy as np
 from perm_LQUBO.form_new_LQUBO import NewLQUBO
 from perm_LQUBO.population_LQUBO_code.initialize_population import initialize_population
-from perm_LQUBO.population_LQUBO_code.tournament_selection import TournamentSelection
+from perm_LQUBO.population_LQUBO_code.tournament_selection import TournamentSelection, BestFitPopulation
 from perm_LQUBO.population_LQUBO_code.evaluate_fitness import evaluate_fitness, max_fitness, min_fitness, avg_fitness
 from perm_LQUBO.population_LQUBO_code.collect_lqubo_population import CollectLQUBOPopulation
 
@@ -138,13 +138,13 @@ class PopulationLQUBOSolver(Solver):
                                                           current_perm=perm).collect_population()
                 total_lqubo_population += lqubo_population
 
-            tournament_selection = TournamentSelection(final_population_size=self.population_size,
-                                                       lqubo_population=total_lqubo_population,
-                                                       previous_population=population,
-                                                       objective_function=self.objective_function)
+            tournament_selection = BestFitPopulation(final_population_size=self.population_size,
+                                                     lqubo_population=total_lqubo_population,
+                                                     previous_population=population,
+                                                     objective_function=self.objective_function)
 
             # Compile new population from tournament selection
-            population = tournament_selection.select_population()
+            population = tournament_selection.return_population()
             evaluated_fitness = evaluate_fitness(population=population, objective_function=self.objective_function)
             max_fit = max_fitness(fitness_array=evaluated_fitness)
             min_fit = min_fitness(fitness_array=evaluated_fitness)
