@@ -125,7 +125,7 @@ else:
     obj_fcn = TSPObjectiveFunction(num_points=obj_array[obj_index])
     instance = 'tsp'
 
-    size = obj_array[obj_index].replace(instance, '')
+    size = obj_array[obj_index]
 
     experiment = Experiment(
         save_csv=True,

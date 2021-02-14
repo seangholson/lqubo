@@ -29,6 +29,9 @@ class ExperimentStatistics:
         self.num_iters = self.results_dict['number_of_iterations']
         self.v_vectors = self.results_dict['max_fitness']
 
+        if isinstance(self.size, int):
+            self.size = str(self.size)
+
     def run_stats(self):
         stats = dict()
 
