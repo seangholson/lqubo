@@ -109,6 +109,10 @@ class PopulationLQUBOSolver(Solver):
         data_dict['max_fitness'] = [max_fit]
         data_dict['min_fitness'] = [min_fit]
         data_dict['avg_fitness'] = [avg_fit]
+        data_dict['population'] = [population]
+
+        form_lqubo_timing = []
+        solve_lqubo_timing = []
 
         # Initialize bitstring
 
@@ -123,7 +127,10 @@ class PopulationLQUBOSolver(Solver):
 
             total_lqubo_population = []
             for perm in population:
+                start_form_lqubo = time.time()
                 lqubo = self.form_qubo.form_lqubo(p=perm)
+                end_form_lqubo = time.time()
+                form_lqubo_timing.append(end_form_lqubo - start_form_lqubo)
 
                 # Solve the LQUBO for new permutations
                 if self.qpu:
@@ -132,7 +139,11 @@ class PopulationLQUBOSolver(Solver):
                         'num_reads': 1000
                     })
 
+                start_solve_lqubo = time.time()
                 response = self.dwave_solver.sample_qubo(lqubo, **self.sampler_kwargs)
+                end_solve_lqubo = time.time()
+                solve_lqubo_timing.append(end_solve_lqubo - start_solve_lqubo)
+
                 lqubo_population = CollectLQUBOPopulation(objective_function=self.objective_function,
                                                           response_record=response.record,
                                                           current_perm=perm).collect_population()
@@ -153,12 +164,15 @@ class PopulationLQUBOSolver(Solver):
             data_dict['max_fitness'].append(max_fit)
             data_dict['min_fitness'].append(min_fit)
             data_dict['avg_fitness'].append(avg_fit)
+            data_dict['population'].append(population)
 
             end_iteration = time.time()
             self.stopwatch += end_iteration - start_iteration
 
         end_code = time.time()
         timing_code = end_code - start_code
+        average_form_lqubo = np.average(form_lqubo_timing)
+        average_solve_lqubo = np.average(solve_lqubo_timing)
 
         lqubo_ans = min(data_dict['max_fitness'])
         num_iters = len(data_dict['max_fitness']) - 1
@@ -170,4 +184,5 @@ class PopulationLQUBOSolver(Solver):
             percent_error = abs(self.solution - lqubo_ans) / self.solution * 100
             obtain_optimal = 0
 
-        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, data_dict, data_dict['max_fitness']
+        return lqubo_ans, percent_error, obtain_optimal, timing_code, num_iters, data_dict, data_dict['max_fitness'], \
+               average_form_lqubo, average_solve_lqubo, data_dict, data_dict['avg_fitness'], data_dict['min_fitness']

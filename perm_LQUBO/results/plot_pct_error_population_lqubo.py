@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 domain = {'had': ['4', '6', '8', '10', '12', '14', '16', '18', '20'],
-          'nug': ['12', '14', '15', '16', '17', '18', '20']}  # '16a',
+          'nug': ['12', '14', '15', '16a', '16b', '17', '18', '20']}
 
 data = {
     'had': {'percent_error': {

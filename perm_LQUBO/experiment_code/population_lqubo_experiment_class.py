@@ -95,6 +95,11 @@ class Experiment:
         results['timing_code'] = []
         results['number_of_iterations'] = []
         results['max_fitness'] = []
+        results['average_form_lqubo'] = []
+        results['average_solve_lqubo'] = []
+        results['data_dict'] = []
+        results['average_fitness'] = []
+        results['min_fitness'] = []
 
         for trial in range(self.num_trials):
             t = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -113,6 +118,11 @@ class Experiment:
             results['number_of_iterations'].append(solver_ans[4])
             results['trial_{}_data_dict'.format(trial + 1)] = solver_ans[5]
             results['max_fitness'].append(solver_ans[6])
+            results['average_form_lqubo'].append(solver_ans[7])
+            results['average_solve_lqubo'].append(solver_ans[8])
+            results['data_dict'].append(solver_ans[9])
+            results['average_fitness'].append(solver_ans[10])
+            results['min_fitness'].append(solver_ans[11])
 
         t = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         f = self.objective_function.dat_file

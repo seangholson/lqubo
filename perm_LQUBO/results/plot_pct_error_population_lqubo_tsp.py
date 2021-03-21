@@ -38,7 +38,7 @@ def plot_tsp_data():
     a[0].plot(domain['tsp'], data['tsp']['percent_error']['avg']['Population_Based_LQUBO_ps_125_nr_2'], 'o-.', label='ps=125; nr=2')
     a[0].plot(domain['tsp'], data['tsp']['percent_error']['avg']['Population_Based_LQUBO_ps_250_nr_1'], 'o--',
               label='ps=250; nr=1')
-    a[0].set_xlabel('QAP Size')
+    a[0].set_xlabel('TSP Size')
     a[0].set_ylabel('Percent Error')
     a[0].legend(loc='upper left')
 
@@ -47,7 +47,7 @@ def plot_tsp_data():
     a[1].plot(domain['tsp'], data['tsp']['timing_code']['avg']['Population_Based_LQUBO_ps_125_nr_2'], 'o-.', label='ps=125; nr=2')
     a[1].plot(domain['tsp'], data['tsp']['timing_code']['avg']['Population_Based_LQUBO_ps_250_nr_1'], 'o--',
               label='ps=250; nr=1')
-    a[1].set_xlabel('QAP Size')
+    a[1].set_xlabel('TSP Size')
     a[1].set_ylabel('Time of Code (sec)')
     a[1].legend(loc='upper left')
     plt.suptitle('Random TSP 100 Iterations')
